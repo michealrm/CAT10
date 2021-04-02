@@ -33,19 +33,19 @@ public class Parser {
                     byte op1UpperMem;
                     byte op2LowerMem;
                     byte op2UpperMem;
-                    short op2Const;     // To support 1 and 2 byte const operands
+                    short op2Const;     // Short to support 1 and 2 byte const operands
                     /*
                     FOR FIRST OPERAND REGISTER
 
                     8 bit Register
-                    0x80 8 byte register        DONE
-                    0x81 hex byte               DONE
-                    0x82 memory                 DONE
+                    0x80 8 byte register
+                    0x81 hex byte
+                    0x82 memory
                     0x84 16 byte displacement
 
                     16 bit Register
-                    0x89 2 byte hex             DONE
-                    0x88 16 byte register       DONE
+                    0x89 2 byte hex
+                    0x88 16 byte register
                      */
                     if(scan.currentToken.tokenStr.startsWith("r")) {
                         if(scan.currentToken.tokenStr.length() == 1 || scan.currentToken.tokenStr.length() > 3)
@@ -124,10 +124,10 @@ public class Parser {
                     }
                     // Else, we're expecting either 16 byte register displacement or memory as first operand, which both should start with a '['
                     /*
-                    FOR FIRST OPERAND MEMORY DISPLACEMENT
+                    FOR FIRST OPERAND = MEMORY DISPLACEMENT
                     0x83 8 bit register
 
-                    FOR FIRST OPERAND 16 BIT REGISTER DISPLACEMENT
+                    FOR FIRST OPERAND = 16 BIT REGISTER DISPLACEMENT
                     0x85 8 bit register
                      */
                     else if(scan.currentToken.tokenStr.equals("[")){
@@ -150,7 +150,7 @@ public class Parser {
                             op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
 
                             // *** Write MOV MEMORY-REG8 to byte code ***
-                            writeBytes((byte) 0x83, op1LowerMem, op1UpperMem, op2Reg); // TODO: Is this right? Do we write the memory address first?
+                            writeBytes((byte) 0x83, op2Reg, op1LowerMem, op1UpperMem);
                         }
                         // Displacement
                         else if(scan.currentToken.tokenStr.startsWith("r")) {
