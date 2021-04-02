@@ -35,15 +35,13 @@ public class Parser {
                     byte op2UpperMem;
                     short op2Const;     // Short to support 1 and 2 byte const operands
                     /*
-                    FOR FIRST OPERAND REGISTER
-
-                    8 bit Register
+                    FOR FIRST OPERAND = 8 BIT REGISTER
                     0x80 8 byte register
                     0x81 hex byte
                     0x82 memory
                     0x84 16 byte displacement
 
-                    16 bit Register
+                    FOR FIRST OPERAND = 16 BIT REGISTER
                     0x89 2 byte hex
                     0x88 16 byte register
                      */
