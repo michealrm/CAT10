@@ -12,6 +12,11 @@ public class Parser {
     private static final byte[] addcOpcodes = {0x10, 0x11, 0x12, 0x13};
     private static final byte[] subbOpcodes = {0x20, 0x21, 0x22, 0x23};
     private static final byte[] cmpOpcodes = {0x30, 0x31, 0x32, 0x33};
+    private static final byte[] andOpcodes = {0x50, 0x51, 0x52, 0x53};
+    private static final byte[] orOpcodes = {0x60, 0x61, 0x62, 0x63};
+    private static final byte[] xorOpcodes = {0x70, 0x71, 0x72, 0x73};
+    private static final byte[] pushOpcodes = {(byte)0x90};
+    private static final byte[] popOpcodes = {(byte)0xA0};
 
     public Parser(Scanner scan, byte[] codeMemory) {
         this.scan = scan;
@@ -36,21 +41,17 @@ public class Parser {
                     MOVInstruction();
                     break;
 
-                // Math
+                // Base instructions that take the same basic operands
                 case "addc":
                 case "subb":
                 case "cmp":
-                    MATHInstructions();
-                    break;
+                case "and":
+                case "or":
+                case "xor":
+                    BaseInstructions();
 
                 // Logical
                 case "not":
-                    break;
-                case "and":
-                    break;
-                case "or":
-                    break;
-                case "xor":
                     break;
 
                 // Stack
@@ -220,14 +221,14 @@ public class Parser {
     }
 
     /**
-     * Reads instruction for MATH instructions: addc, subb, and cmp
+     * Reads instruction for some instructions that have the same operands: addc, subb, cmp, and , or, xor
      * @throws Exception
      */
-    private void MATHInstructions() throws Exception {
+    private void BaseInstructions() throws Exception {
         String mnemonic = scan.currentToken.tokenStr;
 
-        if(!(mnemonic.equals("addc") || mnemonic.equals("subb") || mnemonic.equals("cmp")))
-            errorWithCurrent("ASSEMBLER ERROR: Called MATHInstructions on a opcode that was no addc, subb, or cmp");
+        if(!(mnemonic.equals("addc") || mnemonic.equals("subb") || mnemonic.equals("cmp") || mnemonic.equals("and") || mnemonic.equals("or") || mnemonic.equals("xor")))
+            errorWithCurrent("ASSEMBLER ERROR: Called BaseInstructions on a mnemonic that was not addc, subb, cmp, and, or, xor");
 
         scan.getNext(); // Skip past mnemonic
 
@@ -241,7 +242,7 @@ public class Parser {
 
         if(scan.currentToken.tokenStr.startsWith("r")) {
             if(scan.currentToken.tokenStr.length() != 2)
-                errorWithCurrent("but register operands for ADDC must be 1 byte");
+                errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
 
             op1Reg = regToByte(scan.currentToken.tokenStr, "1", mnemonic); // This will parse either a 8-bit reg or 16-bit reg
 
@@ -258,7 +259,7 @@ public class Parser {
 
                 op2Reg = regToByte(scan.currentToken.tokenStr, "2", mnemonic);
 
-                writeBytes(mathToOpcode(mnemonic, 0), op1Reg, op2Reg);
+                writeBytes(baseToOpcode(mnemonic, 0), op1Reg, op2Reg);
 
             }
             // 0x11 Reg8-const8
@@ -269,7 +270,7 @@ public class Parser {
                 // 0x81 1 byte const second operand
                 if((op2Const & 0xFF) == op2Const) {
                     // Write MOV REG-CONST8 to byte code
-                    writeBytes(mathToOpcode(mnemonic, 1), op1Reg, (byte)op2Const);
+                    writeBytes(baseToOpcode(mnemonic, 1), op1Reg, (byte)op2Const);
                 }
                 // Reg8-const16 error, type's sizes do not match
                 else {
@@ -286,7 +287,7 @@ public class Parser {
                 op2UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
 
                 // Write MOV REG16-MEM to byte code
-                writeBytes(mathToOpcode(mnemonic, 2), op1Reg, op2LowerMem, op2UpperMem);
+                writeBytes(baseToOpcode(mnemonic, 2), op1Reg, op2LowerMem, op2UpperMem);
             }
         }
         // Else, we're expecting memory as first operand, which should start with a '['
@@ -310,7 +311,7 @@ public class Parser {
                 op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
 
                 // *** Write MOV MEMORY-REG8 to byte code ***
-                writeBytes(mathToOpcode(mnemonic, 3), op2Reg, op1LowerMem, op1UpperMem);
+                writeBytes(baseToOpcode(mnemonic, 3), op2Reg, op1LowerMem, op1UpperMem);
             }
             // Error, operand is not a memory
             else {
@@ -321,6 +322,61 @@ public class Parser {
         else {
             error("No known `mov` instructions starting with %s. A `mov` instruction's first operand " +
                     "must be either a 8 bit or 16 bit register, 16 bit register displacement, or memory", scan.currentToken.tokenStr);
+        }
+    }
+
+    private void NOTInstruction() throws Exception {
+        scan.getNext();
+
+        byte op1Reg;
+        byte op1LowerMem;   // Big endian, so most significant is at the lower address
+        byte op1UpperMem;
+
+        if(scan.currentToken.classif == Classif.REGISTER) {
+            if(scan.currentToken.tokenStr.length() != 2)
+                errorWithCurrent("but NOT only supports a 1 byte register");
+
+            op1Reg = regToByte(scan.currentToken.tokenStr, "1", "not");
+
+            writeBytes((byte) 0x40, op1Reg);
+        }
+        // Must be memory
+        else {
+            if(!scan.currentToken.tokenStr.equals("["))
+                error("For NOT instruction: if first operand is not a 1 byte register, it must be a memory displacement");
+            scan.getNext();
+            if(!scan.currentToken.tokenStr.equals("$"))
+                error("For NOT instruction displacement: only memory displacement is supported");
+            scan.getNext();
+
+            op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
+            op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+
+            writeBytes((byte)0x43, op1LowerMem, op1UpperMem);
+        }
+    }
+
+    private void STACKInstructions() throws Exception {
+        String mnemonic = scan.currentToken.tokenStr;
+
+        if(!(mnemonic.equals("push") || mnemonic.equals("pop")))
+            errorWithCurrent("ASSEMBLER ERROR: Called STACKInstructions on a mnemonic that was not push, pop");
+
+        scan.getNext(); // Skip past mnemonic
+
+        byte op1Reg;
+
+        if(scan.currentToken.tokenStr.startsWith("r")) {
+            if(scan.currentToken.tokenStr.length() != 2)
+                errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
+
+            op1Reg = regToByte(scan.currentToken.tokenStr, "1", mnemonic); // This will parse either a 8-bit reg or 16-bit reg
+
+            writeBytes(baseToOpcode(mnemonic, 0), op1Reg);
+        }
+        // Else, there are no other cases. We only support one 1 byte operand for push, pop
+        else {
+            errorWithCurrent("Expected a 1 byte register for instruction %s", mnemonic);
         }
     }
 
@@ -415,7 +471,14 @@ public class Parser {
         return regByte;
     }
 
-    private byte mathToOpcode(String mnemonic, int index) throws Exception {
+    /**
+     * Converts a instruction with basic operands () for the instructions (addc, subb, cmp, and, or, xor)
+     * @param mnemonic The mnemonic to get the opcode for
+     * @param index The index of the Opcodes byte array to grab
+     * @return The opcode for the specific mnemonic and index
+     * @throws Exception if we can't find the mnemonic
+     */
+    private byte baseToOpcode(String mnemonic, int index) throws Exception {
         switch(mnemonic) {
             case "addc":
                 return addcOpcodes[index];
@@ -423,6 +486,16 @@ public class Parser {
                 return subbOpcodes[index];
             case "cmp":
                 return cmpOpcodes[index];
+            case "and":
+                return andOpcodes[index];
+            case "or":
+                return orOpcodes[index];
+            case "xor":
+                return xorOpcodes[index];
+            case "push":
+                return pushOpcodes[index];
+            case "pop":
+                return popOpcodes[index];
             default:
                 throw new Exception("Tried to find " + mnemonic + "'s opcodes, but this is not a defined math operation");
         }
