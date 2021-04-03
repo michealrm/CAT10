@@ -49,15 +49,16 @@ public class Parser {
                 case "or":
                 case "xor":
                     BaseInstructions();
-
+                    break;
                 // Logical
                 case "not":
+                    NOTInstruction();
                     break;
 
                 // Stack
                 case "push":
-                    break;
                 case "pop":
+                    STACKInstructions();
                     break;
             }
         }
