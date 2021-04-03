@@ -91,7 +91,7 @@ public class Parser {
                         // Reg-mem 0x82
                         else if(scan.currentToken.tokenStr.equals("[")){
                             if(!isOp1Reg8Bits) {
-                                error("Read '[', ethe first register operand must only 8 bits for memory as the second operand");
+                                errorWithCurrent("but the first register operand must only 8 bits for memory as the second operand");
                             }
                             scan.getNext();
                             if(!scan.currentToken.tokenStr.equals("$"))
