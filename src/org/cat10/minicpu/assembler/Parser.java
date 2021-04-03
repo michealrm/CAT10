@@ -38,10 +38,9 @@ public class Parser {
 
                 // Math
                 case "addc":
-                    break;
                 case "subb":
-                    break;
                 case "cmp":
+                    MATHInstructions();
                     break;
 
                 // Logical
