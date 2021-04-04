@@ -88,13 +88,8 @@ public class Scanner {
                 textCharM = sourceLineM.get(iLineNumber).toCharArray();
             }
 
-            char c = textCharM[iColNumber];
-            if(c == '$') {
-                t.classif = Classif.INTCONST; // Skip '$', it's not useful in parsing, we just need to know it's a INTCONST
-            } else {
-                t.tokenSB.append(textCharM[iColNumber]);
-                setClassification(t);
-            }
+            t.tokenSB.append(textCharM[iColNumber]);
+            setClassification(t);
 
             // Calculate next position
             nextPos = nextPos(iLineNumber, iColNumber); // We don't want to skip whitespace because that delimits continuesToken
@@ -254,11 +249,12 @@ public class Scanner {
     }
 
     private boolean isSeparator(Token token) {
-        return token.tokenSB.charAt(0) == ',';
+        char c = token.tokenSB.charAt(0);
+        return c == ',' || c == '[' || c == ']';
     }
 
     private boolean isSeparator(char c) {
-        return c == ',';
+        return c == ',' || c == '[' || c == ']';
     }
 
     private boolean isIntConst(Token token) {

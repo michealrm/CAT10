@@ -85,7 +85,7 @@ public class Parser {
          * 0x89 2 byte hex
          * 0x88 2 byte register
          */
-        if(scan.currentToken.tokenStr.startsWith("R")) {
+        if(scan.currentToken.classif == Classif.REGISTER) {
             if(scan.currentToken.tokenStr.length() == 1 || scan.currentToken.tokenStr.length() > 3)
                 errorWithCurrent("but register operands must contain either 1 or 2 concatenated registers");
 
@@ -134,7 +134,7 @@ public class Parser {
                     errorWithCurrent("but the first register operand must only 8 bits for memory as the second operand");
                 }
                 scan.getNext();
-                if(!scan.currentToken.tokenStr.equals("$"))
+                if(scan.currentToken.classif != Classif.INTCONST)
                     errorWithCurrent("Expected a memory location starting with '$' in the second operand following a '[' for 8REG as the first operand");
                 scan.getNext();
                 op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
@@ -148,6 +148,7 @@ public class Parser {
                 op2Const = constStrToShort(scan.currentToken.tokenStr);
 
                 // 0x81 1 byte const second operand
+                // Check if op2Const is bigger than 1 byte by masking FF
                 if((op2Const & 0xFF) == op2Const) {
                     // Write MOV REG-CONST8 to byte code
                     writeBytes((byte) 0x81, op1Reg, (byte)op2Const);
@@ -189,7 +190,7 @@ public class Parser {
                 writeBytes((byte) 0x83, op2Reg, op1LowerMem, op1UpperMem);
             }
             // Displacement
-            else if(scan.currentToken.tokenStr.startsWith("r")) {
+            else if(scan.currentToken.classif == Classif.REGISTER) {
                 op1Reg = regToByte(scan.currentToken.tokenStr, "1", "mov displacement");
 
                 scan.getNext();
@@ -237,7 +238,7 @@ public class Parser {
         byte op2UpperMem;
         short op2Const;     // Short to support 1 and 2 byte const operands
 
-        if(scan.currentToken.tokenStr.startsWith("r")) {
+        if(scan.currentToken.classif == Classif.REGISTER) {
             if(scan.currentToken.tokenStr.length() != 2)
                 errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
 
@@ -260,11 +261,11 @@ public class Parser {
 
             }
             // 0x11 Reg8-const8
-            else if(scan.currentToken.tokenStr.equals("$")) {
-                scan.getNext();
+            else if(scan.currentToken.classif == Classif.INTCONST) {
                 op2Const = constStrToShort(scan.currentToken.tokenStr);
 
                 // 0x81 1 byte const second operand
+                // Check if op2Const is bigger than 1 byte by masking FF
                 if((op2Const & 0xFF) == op2Const) {
                     // Write MOV REG-CONST8 to byte code
                     writeBytes(baseToOpcode(mnemonic, 1), op1Reg, (byte)op2Const);
@@ -277,7 +278,7 @@ public class Parser {
             // 0x12 Reg8-mem16 displacement
             else if(scan.currentToken.tokenStr.equals("[")){
                 scan.getNext();
-                if(!scan.currentToken.tokenStr.equals("$"))
+                if(scan.currentToken.classif != Classif.INTCONST)
                     errorWithCurrent("Expected a memory location starting with '$' in the second operand following a '['");
                 scan.getNext();
                 op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
@@ -292,10 +293,9 @@ public class Parser {
             scan.getNext();
 
             // Memory
-            if(scan.currentToken.tokenStr.equals("$")) {
-                scan.getNext();
-                op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
-                op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+            if(scan.currentToken.classif != Classif.INTCONST) {
+                op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
+                op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
                 scan.getNext();
                 if(!scan.currentToken.tokenStr.equals(","))
@@ -343,12 +343,12 @@ public class Parser {
             if(!scan.currentToken.tokenStr.equals("["))
                 error("For NOT instruction: if first operand is not a 1 byte register, it must be a memory displacement");
             scan.getNext();
-            if(!scan.currentToken.tokenStr.equals("$"))
+            if(scan.currentToken.classif != Classif.INTCONST)
                 error("For NOT instruction displacement: only memory displacement is supported");
             scan.getNext();
 
-            op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
-            op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+            op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
+            op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
             writeBytes((byte)0x43, op1LowerMem, op1UpperMem);
         }
@@ -364,7 +364,7 @@ public class Parser {
 
         byte op1Reg;
 
-        if(scan.currentToken.tokenStr.startsWith("R")) {
+        if(scan.currentToken.classif == Classif.REGISTER) {
             if(scan.currentToken.tokenStr.length() != 2)
                 errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
 
@@ -386,9 +386,10 @@ public class Parser {
     }
 
     private short constStrToShort(String str) throws Exception {
+        int end = str.startsWith("$") ? 1 : 0; // Don't iterate down to the '$' because it's not apart of the number...
         short num = 0;
         int index = 0;
-        for(int i = str.length() - 1; i >= 0; i--) {
+        for(int i = str.length() - 1; i >= end; i--) {
             num |= hexDigitToByte(str.charAt(i)) << index * 4;
             index++;
         }
