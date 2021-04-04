@@ -72,6 +72,7 @@ public class Scanner {
 
         if(iLineNumber >= sourceLineM.size()) {
             t.classif = Classif.EOF;
+            currentToken = t;
             return t;
         }
 
@@ -88,7 +89,7 @@ public class Scanner {
                 textCharM = sourceLineM.get(iLineNumber).toCharArray();
             }
 
-            t.tokenSB.append(textCharM[iColNumber]);
+            t.tokenSB.append(Character.toUpperCase(textCharM[iColNumber]));
             setClassification(t);
 
             // Calculate next position
@@ -106,7 +107,7 @@ public class Scanner {
 
                 }
             }
-        } while(sourceLineBefore == iLineNumber && continuesToken(t, textCharM[iColNumber]));
+        } while(sourceLineBefore == iLineNumber && continuesToken(t, Character.toUpperCase(textCharM[iColNumber])));
 
         checkForExceptions(t);
 
@@ -115,6 +116,10 @@ public class Scanner {
 
         iNextSourceLineNr = iLineNumber;
         iNextColPos = iColNumber;
+
+        // Skip whitespace
+        while(isWhitespace(t))
+            t = getNext();
 
         return t;
     }
@@ -133,6 +138,31 @@ public class Scanner {
                 return !isSeparator(c);
             case SEPARATOR:
                 return isWhitespace(token) && isWhitespace(c);
+            case MNEMONIC:
+                return containsMnemonic(token.tokenSB.toString() + c);
+        }
+    }
+
+    /**
+     * Sets the classification and subclassification of the token
+     * Token may not be fully scaaned in, so these cases try to set classification for partially scanned tokens. This
+     * also means we use String Buffer instead of tokenStr in token, since we copy tokenSB to tokenStr at the END
+     * of getNext()
+     * @param token Token that will be classified
+     */
+    public void setClassification(Token token) throws Exception {
+        if(token.tokenSB.length() == 0) {
+            token.classif = Classif.EMPTY;
+        }  else if(isWhitespace(token)) {
+            token.classif = Classif.SEPARATOR;
+        } else if(isSeparator(token)) {
+            token.classif = Classif.SEPARATOR;
+        } else if(isIntConst(token)) {
+            token.classif = Classif.INTCONST;
+        } else if(isRegister(token)) {
+            token.classif = Classif.REGISTER;
+        } else if(containsMnemonic(token.tokenSB.toString())) {
+            token.classif = Classif.MNEMONIC;
         }
     }
 
@@ -169,9 +199,6 @@ public class Scanner {
             }
             if(!allHex)
                 throw new InvalidHexConstException(t.tokenSB.toString());
-
-            // Remove the $ from the beginning. It's not useful in parsing.
-            t.tokenSB.delete(0, 1);
         }
     }
 
@@ -219,25 +246,8 @@ public class Scanner {
         return ret;
     }
 
-    /**
-     * Sets the classification and subclassification of the token
-     * Token may not be fully scaaned in, so these cases try to set classification for partially scanned tokens. This
-     * also means we use String Buffer instead of tokenStr in token, since we copy tokenSB to tokenStr at the END
-     * of getNext()
-     * @param token Token that will be classified
-     */
-    public void setClassification(Token token) throws Exception {
-        if(token.tokenSB.length() == 0) {
-            token.classif = Classif.EMPTY;
-        }  else if(isWhitespace(token)) {
-            token.classif = Classif.SEPARATOR;
-        } else if(isSeparator(token)) {
-            token.classif = Classif.SEPARATOR;
-        } else if(isIntConst(token)) {
-            token.classif = Classif.INTCONST;
-        } else if(isRegister(token)) {
-            token.classif = Classif.REGISTER;
-        }
+    private boolean containsMnemonic(String str) {
+        return containsIn(str, "MOV", "ADDC", "SUBB", "CMP", "NOT", "AND", "OR", "XOR", "PUSH", "POP");
     }
 
     private boolean isWhitespace(Token token) {
@@ -263,6 +273,13 @@ public class Scanner {
 
     private boolean isRegister(Token token) {
         return token.tokenSB.charAt(0) == 'R';
+    }
+
+    public boolean containsIn(String match, String... in) {
+        for(String s : in)
+            if(s.contains(match))
+                return true;
+        return false;
     }
 
 }

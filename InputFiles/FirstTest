@@ -1,0 +1,44 @@
+mov r1, r2
+mov r12, r32
+mov r2, $FF
+mov r03, $BBBB
+mov r2, [$AAAA]
+mov [$1188], r3
+mov r0, [r01]
+mov [r01], r3
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+NOT R1
+NOT [$ABCD]
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+ADDC R1, R1
+ADDC R2, $DD
+ADDC R0, [$1234]
+ADDC [$ABCD], R0
+
+push R0
+pop R1

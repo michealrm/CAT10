@@ -28,9 +28,11 @@ public class Parser {
      * @throws Exception
      */
     public void parseSourceToBytecode() throws Exception {
-        while(scan.currentToken.classif != Classif.EOF) {
-            // Read statement
+        while(true) {
             scan.getNext();
+            if(scan.currentToken.classif == Classif.EOF)
+                break;
+
             if(scan.currentToken.classif != Classif.MNEMONIC)
                 errorWithCurrent("Expected a mnemonic for the start of a statement");
 
@@ -128,20 +130,37 @@ public class Parser {
                 }
 
             }
-            // Reg-mem 0x82
+            // Reg-mem 0x82 OR reg8-reg16 displacement 0x84
             else if(scan.currentToken.tokenStr.equals("[")){
                 if(!isOp1Reg8Bits) {
                     errorWithCurrent("but the first register operand must only 8 bits for memory as the second operand");
                 }
-                scan.getNext();
-                if(scan.currentToken.classif != Classif.INTCONST)
-                    errorWithCurrent("Expected a memory location starting with '$' in the second operand following a '[' for 8REG as the first operand");
-                scan.getNext();
-                op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
-                op2UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+                scan.getNext(); // Skip past "["
+                // 2 byte register displacement
+                if(scan.currentToken.classif == Classif.REGISTER) {
+                    if(scan.currentToken.tokenStr.length() == 3) {
+                        op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
 
-                // Write MOV REG16-MEM to byte code
-                writeBytes((byte)0x82, op1Reg, op2LowerMem, op2UpperMem);
+                        // Write MOV R8-REG16 DISPLACEMENT to byte code
+                        writeBytes((byte) 0x84, op1Reg, op2Reg);
+
+                        scan.getNext(); // Skip past register
+                    } else {
+                        errorWithCurrent("Expected a 2 byte register for second operand displacement");
+                    }
+                }
+                // Memory
+                else if(scan.currentToken.classif == Classif.INTCONST){
+                    op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
+                    op2UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
+
+                    // Write MOV REG16-MEM to byte code
+                    writeBytes((byte) 0x82, op1Reg, op2LowerMem, op2UpperMem);
+
+                    scan.getNext(); // Scan past memory int const
+                } else {
+                    errorWithCurrent("Expected either 2 byte register displacement or memory operand for r8 as first operand");
+                }
             }
             // Reg-const 1 and 2 byte
             else if(scan.currentToken.classif == Classif.INTCONST) {
@@ -173,10 +192,11 @@ public class Parser {
 
             // Memory
             if(scan.currentToken.classif == Classif.INTCONST) {
-                op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
-                op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+                op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
+                op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
-                scan.getNext();
+                scan.getNext(); // Skip past int const
+                scan.getNext(); // Skip past ']' from memory operand
                 if(!scan.currentToken.tokenStr.equals(","))
                     errorWithCurrent("Expected ',' after first operand");
                 scan.getNext();
@@ -193,7 +213,8 @@ public class Parser {
             else if(scan.currentToken.classif == Classif.REGISTER) {
                 op1Reg = regToByte(scan.currentToken.tokenStr, "1", "mov displacement");
 
-                scan.getNext();
+                scan.getNext(); // Skip past register
+                scan.getNext(); // Skip past ']'
                 if(!scan.currentToken.tokenStr.equals(","))
                     errorWithCurrent("Expected ',' after first operand");
                 scan.getNext();
@@ -213,7 +234,7 @@ public class Parser {
         }
         // Unknown instruction for `mov`. Error.
         else {
-            error("No known `mov` instructions starting with %s. A `mov` instruction's first operand " +
+            error("No known `mov` instructions starting with \"%s\". A `mov` instruction's first operand " +
                     "must be either a 8 bit or 16 bit register, 16 bit register displacement, or memory", scan.currentToken.tokenStr);
         }
     }
@@ -280,24 +301,27 @@ public class Parser {
                 scan.getNext();
                 if(scan.currentToken.classif != Classif.INTCONST)
                     errorWithCurrent("Expected a memory location starting with '$' in the second operand following a '['");
-                scan.getNext();
-                op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(0, 2));
-                op2UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(2, 4));
+
+                op2LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
+                op2UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
                 // Write MOV REG16-MEM to byte code
                 writeBytes(baseToOpcode(mnemonic, 2), op1Reg, op2LowerMem, op2UpperMem);
+
+                scan.getNext(); // Skip past ']'
             }
         }
         // Else, we're expecting memory as first operand, which should start with a '['
         else if(scan.currentToken.tokenStr.equals("[")){
-            scan.getNext();
+            scan.getNext(); // Skip past '['
 
             // Memory
-            if(scan.currentToken.classif != Classif.INTCONST) {
+            if(scan.currentToken.classif == Classif.INTCONST) {
                 op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
                 op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
-                scan.getNext();
+                scan.getNext(); // Skip past INTCONST for memory
+                scan.getNext(); // Skip past ']'
                 if(!scan.currentToken.tokenStr.equals(","))
                     errorWithCurrent("Expected ',' after first operand");
                 scan.getNext();
@@ -312,7 +336,7 @@ public class Parser {
             }
             // Error, operand is not a memory
             else {
-                errorWithCurrent("but 2nd operand displacement is not a memory displacement. The only valid displacement (1st operand) for addc is `addc [MEM], R8`");
+                errorWithCurrent("but for displacement we only support memory for base commands (addc, subb, cmp, and, or, xor)");
             }
         }
         // Unknown operand for base instruction. Error.
@@ -342,15 +366,16 @@ public class Parser {
         else {
             if(!scan.currentToken.tokenStr.equals("["))
                 error("For NOT instruction: if first operand is not a 1 byte register, it must be a memory displacement");
-            scan.getNext();
+            scan.getNext(); // Skip past '['
             if(scan.currentToken.classif != Classif.INTCONST)
                 error("For NOT instruction displacement: only memory displacement is supported");
-            scan.getNext();
 
             op1LowerMem = strByteToByte(scan.currentToken.tokenStr.substring(1, 3));
             op1UpperMem = strByteToByte(scan.currentToken.tokenStr.substring(3, 5));
 
             writeBytes((byte)0x43, op1LowerMem, op1UpperMem);
+
+            scan.getNext(); // Skip past INTCONST
         }
     }
 
@@ -502,14 +527,15 @@ public class Parser {
 
     // Exceptions
 
-    public void error(String fmt) throws Exception {
-        throw new ParserException(scan.iSourceLineNr, fmt, scan.sourceFileNm);
+    private void error(String fmt) throws Exception {
+        throw new ParserException(scan.iSourceLineNr, scan.iColPos, fmt, scan.sourceFileNm);
     }
 
-    public void error(String fmt, Object... varArgs) throws Exception
+    private void error(String fmt, Object... varArgs) throws Exception
     {
         String diagnosticTxt = String.format(fmt, varArgs);
         throw new ParserException(scan.iSourceLineNr
+                , scan.iColPos
                 , diagnosticTxt
                 , scan.sourceFileNm);
     }
@@ -518,11 +544,11 @@ public class Parser {
      * Error with the current token. Usually "Read X, Expected Y" when we expect a certain token to follow another token
      * @param fmt The error message to be printed
      */
-    public void errorWithCurrent(String fmt) throws Exception {
+    private void errorWithCurrent(String fmt) throws Exception {
         error("Read \"%s\", " + fmt, scan.currentToken.tokenStr);
     }
 
-    public void errorWithCurrent(String fmt, Object... varArgs) throws Exception {
+    private void errorWithCurrent(String fmt, Object... varArgs) throws Exception {
         error("Read \"%s\", " + fmt, scan.currentToken.tokenStr, varArgs);
     }
 }
