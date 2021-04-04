@@ -4,7 +4,7 @@ public enum Classif {
     EMPTY,
     MNEMONIC,   // addc, mov
     REGISTER,   // R1, R6
-    OPERATOR,   // $ for integer constant
+    INTCONST,   // Examples: ABCD, 10AF, FF
     SEPARATOR,   // '[', ']', ','
     EOF,
 }

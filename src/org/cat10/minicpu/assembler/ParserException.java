@@ -1,4 +1,4 @@
-package org.cat10.minicpu.exception;
+package org.cat10.minicpu.assembler;
 
 public class ParserException extends Exception
 {
