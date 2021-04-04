@@ -95,7 +95,7 @@ public class Parser {
             if(scan.currentToken.tokenStr.length() == 3)
                 isOp1Reg8Bits = false;
 
-            op1Reg = regToByte(scan.currentToken.tokenStr, "1", "mov"); // This will parse either a 8-bit reg or 16-bit reg
+            op1Reg = regToByte(scan.currentToken.tokenStr, 1, "mov"); // This will parse either a 8-bit reg or 16-bit reg
             scan.getNext();
             if(!scan.currentToken.tokenStr.equals(","))
                 errorWithCurrent("Expected ',' after first operand");
@@ -103,13 +103,13 @@ public class Parser {
 
             // Reg-reg 0x80 for 8 bit, 0x88 for 16 bit
             if(scan.currentToken.classif == Classif.REGISTER) {
-                op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov");
+                op2Reg = regToByte(scan.currentToken.tokenStr, 2, "mov");
 
                 // Second operand is 8 bit reg. First operand must be 8 bits
                 if(scan.currentToken.tokenStr.length() == 2) {
                     if(isOp1Reg8Bits) {
                         // *** Write MOV REG8-REG8 to byte code ***
-                        writeBytes((byte) 0x80, op1Reg, op2Reg);
+                        writeBytes((byte) 0x80, (byte) (op1Reg | op2Reg));
                     }
                     else {
                         errorWithCurrent("but first operand was a 8 bit register, so we're expecting an 8 bit operand");
@@ -119,7 +119,7 @@ public class Parser {
                 else if(scan.currentToken.tokenStr.length() == 3) {
                     if(!isOp1Reg8Bits) {
                         // *** Write MOV REG16-REG16 to byte code ***
-                        writeBytes((byte) 0x88, op1Reg, op2Reg);
+                        writeBytes((byte) 0x88, (byte) (op1Reg | op2Reg));
                     }
                     else {
                         errorWithCurrent("but first operand was a 16 bit register, so we're expecting a 16 bit operand");
@@ -139,10 +139,10 @@ public class Parser {
                 // 2 byte register displacement
                 if(scan.currentToken.classif == Classif.REGISTER) {
                     if(scan.currentToken.tokenStr.length() == 3) {
-                        op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
+                        op2Reg = regToByte(scan.currentToken.tokenStr, 2, "mov displacement");
 
                         // Write MOV R8-REG16 DISPLACEMENT to byte code
-                        writeBytes((byte) 0x84, op1Reg, op2Reg);
+                        writeBytes((byte) 0x84, (byte) (op1Reg | op2Reg));
 
                         scan.getNext(); // Skip past register
                     } else {
@@ -204,14 +204,14 @@ public class Parser {
                 if(scan.currentToken.classif != Classif.REGISTER)
                     errorWithCurrent("Second operand must be 8 bit register for first operand memory");
 
-                op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
+                op2Reg = regToByte(scan.currentToken.tokenStr, 2, "mov displacement");
 
                 // *** Write MOV MEMORY-REG8 to byte code ***
                 writeBytes((byte) 0x83, op2Reg, op1LowerMem, op1UpperMem);
             }
             // Displacement
             else if(scan.currentToken.classif == Classif.REGISTER) {
-                op1Reg = regToByte(scan.currentToken.tokenStr, "1", "mov displacement");
+                op1Reg = regToByte(scan.currentToken.tokenStr, 1, "mov displacement");
 
                 scan.getNext(); // Skip past register
                 scan.getNext(); // Skip past ']'
@@ -222,10 +222,10 @@ public class Parser {
                 if(scan.currentToken.classif != Classif.REGISTER)
                     errorWithCurrent("Second operand must be 8 bit register for first operand 16 bit register displacement");
 
-                op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
+                op2Reg = regToByte(scan.currentToken.tokenStr, 2, "mov displacement");
 
                 // *** Write MOV REG16 DISPLACEMENT-REG8 to byte code ***
-                writeBytes((byte) 0x85, op1Reg, op2Reg);
+                writeBytes((byte) 0x85, (byte) (op1Reg | op2Reg));
             }
             // Error, operand is not a memory or register displacement
             else {
@@ -263,7 +263,7 @@ public class Parser {
             if(scan.currentToken.tokenStr.length() != 2)
                 errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
 
-            op1Reg = regToByte(scan.currentToken.tokenStr, "1", mnemonic); // This will parse either a 8-bit reg or 16-bit reg
+            op1Reg = regToByte(scan.currentToken.tokenStr, 1, mnemonic); // This will parse either a 8-bit reg or 16-bit reg
 
             scan.getNext();
             if(!scan.currentToken.tokenStr.equals(","))
@@ -276,9 +276,9 @@ public class Parser {
                 if(scan.currentToken.tokenStr.length() != 2)
                     errorWithCurrent("but only 1 byte register operands are supported for instruction %s", mnemonic);
 
-                op2Reg = regToByte(scan.currentToken.tokenStr, "2", mnemonic);
+                op2Reg = regToByte(scan.currentToken.tokenStr, 2, mnemonic);
 
-                writeBytes(baseToOpcode(mnemonic, 0), op1Reg, op2Reg);
+                writeBytes(baseToOpcode(mnemonic, 0), (byte) (op1Reg | op2Reg));
 
             }
             // 0x11 Reg8-const8
@@ -329,7 +329,7 @@ public class Parser {
                 if(scan.currentToken.classif != Classif.REGISTER)
                     errorWithCurrent("Second operand must be 8 bit register for first operand memory");
 
-                op2Reg = regToByte(scan.currentToken.tokenStr, "2", "mov displacement");
+                op2Reg = regToByte(scan.currentToken.tokenStr, 2, "mov displacement");
 
                 // *** Write MOV MEMORY-REG8 to byte code ***
                 writeBytes(baseToOpcode(mnemonic, 3), op2Reg, op1LowerMem, op1UpperMem);
@@ -358,7 +358,7 @@ public class Parser {
             if(scan.currentToken.tokenStr.length() != 2)
                 errorWithCurrent("but NOT only supports a 1 byte register");
 
-            op1Reg = regToByte(scan.currentToken.tokenStr, "1", "not");
+            op1Reg = regToByte(scan.currentToken.tokenStr, 1, "not");
 
             writeBytes((byte) 0x40, op1Reg);
         }
@@ -393,7 +393,7 @@ public class Parser {
             if(scan.currentToken.tokenStr.length() != 2)
                 errorWithCurrent("but register operands for %s must be 1 byte", mnemonic);
 
-            op1Reg = regToByte(scan.currentToken.tokenStr, "1", mnemonic); // This will parse either a 8-bit reg or 16-bit reg
+            op1Reg = regToByte(scan.currentToken.tokenStr, 1, mnemonic); // This will parse either a 8-bit reg or 16-bit reg
 
             writeBytes(baseToOpcode(mnemonic, 0), op1Reg);
         }
@@ -461,37 +461,38 @@ public class Parser {
         }
     }
 
-    private byte regToByte(String tokenStr, String operandNumber, String mnemonic) throws Exception {
+    private byte regToByte(String tokenStr, int operandNumber, String mnemonic) throws Exception {
         byte regByte;
 
         if(tokenStr.length() < 2 || tokenStr.length() > 3)
             error("%s register must be in the form of either R8 or R16");
-
-        if(!Character.isDigit(tokenStr.charAt(1)))
-            error("Register 1 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
 
         Integer reg1 = Integer.parseInt(tokenStr.substring(1, 2));
 
         if(reg1 > 3)
             error("Register 1 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
 
-        regByte = (byte) (reg1 << 4);
+        regByte = (byte) (reg1 << 2); // First register in the upper 2 bits
 
-        // Only one byte register
-        if(tokenStr.length() != 3)
-            return regByte;
+        // 2 byte register
+        Integer reg2 = 0;
+        if(tokenStr.length() == 3) {
+            // 2 byte concatenated register
+            if (!Character.isDigit(tokenStr.charAt(2)))
+                error("Register 2 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
 
-        // 2 byte concatenated register
-        if(!Character.isDigit(tokenStr.charAt(2)))
-            error("Register 2 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
+            reg2 = Integer.parseInt(tokenStr.substring(2, 3));
 
-        Integer reg2 = Integer.parseInt(tokenStr.substring(2, 3));
+            if (reg2 > 3)
+                error("Register 2 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
+        }
+        regByte |= reg2; // Register 2 in the bottom 2 bits
 
-        if(reg2 > 3)
-            error("Register 2 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
+        if(operandNumber == 1)
+            regByte <<= 4; // Register 1 in place of the 1s in 1111 0000 for 1 byte encoding
 
-        regByte |= reg2;
-
+        if(regByte == 0x60)
+            System.out.println();
         return regByte;
     }
 
