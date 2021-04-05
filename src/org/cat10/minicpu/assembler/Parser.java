@@ -122,7 +122,7 @@ public class Parser {
                         writeBytes((byte) 0x88, (byte) (op1Reg | op2Reg));
                     }
                     else {
-                        errorWithCurrent("but first operand was a 16 bit register, so we're expecting a 16 bit operand");
+                        errorWithCurrent("but first operand was a 8 bit register, so we're expecting a matching 8 bit operand");
                     }
                 }
                 else {
@@ -470,7 +470,7 @@ public class Parser {
         Integer reg1 = Integer.parseInt(tokenStr.substring(1, 2));
 
         if(reg1 > 3)
-            error("Register 1 in operand %d of the %s instruction was not a number", operandNumber, mnemonic);
+            error("%s register must be in the form of either R8 or R16. Note that registers go from 0 to 3.", operandNumber, mnemonic);
 
         regByte = (byte) (reg1 << 2); // First register in the upper 2 bits
 
@@ -490,9 +490,7 @@ public class Parser {
 
         if(operandNumber == 1)
             regByte <<= 4; // Register 1 in place of the 1s in 1111 0000 for 1 byte encoding
-
-        if(regByte == 0x60)
-            System.out.println();
+        
         return regByte;
     }
 
