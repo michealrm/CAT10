@@ -5,12 +5,14 @@ import org.cat10.minicpu.assembler.Scanner;
 
 public class Main {
 
+    public static byte[] code;
+
     public static void main(String[] args) {
-        byte[] mem = new byte[0x1000]; // 4K
+        code = new byte[0x1000]; // 4K
         Scanner scan = new Scanner(args[0]);
 
         try {
-            Parser parser = new Parser(scan, mem);
+            Parser parser = new Parser(scan, code);
 
             parser.parseSourceToBytecode();
 
@@ -19,7 +21,7 @@ public class Main {
         }
 
         // Print bytecode!
-        for(byte b : mem)
+        for(byte b : code)
             System.out.printf("%x ", b);
 
         // CPU.run();

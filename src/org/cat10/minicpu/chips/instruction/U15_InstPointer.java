@@ -1,4 +1,6 @@
-package org.cat10.minicpu.chips;
+package org.cat10.minicpu.chips.instruction;
+
+import org.cat10.minicpu.chips.Chip;
 
 /**
  * CLOCKED CHIP
