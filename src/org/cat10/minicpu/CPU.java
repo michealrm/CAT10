@@ -14,15 +14,13 @@ public class CPU {
      * Set chips
      */
     static {
-        // Combinational chips
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
-
-        // Clocked Chips
         ChipManager.chipMap.put("U15", new U15_InstPointer());
     }
 
     public static void run() {
         while(CPU_IS_ON) {
+            ChipManager.updateChips();
         }
     }
 
