@@ -6,8 +6,7 @@ import java.util.HashMap;
 
 /**
  * ChipManager handles execution of clocked and combinational chips. For the order of execution, you should place
- * chips in order of: combinational chips in order of flow, clocked chips. You can think of it like this: all the
- * inputs propagate, then the clock ticks.
+ * chips sequentially in order of flow.
  *
  * ChipManager is static, so you can only manage one set of chips during execution, i.e. the CPU cannot run multiple
  * instances in one execution. Maybe some use cases will pop up later, but for this project it's unnecessary. Also,
@@ -18,7 +17,6 @@ public class ChipManager {
 
     /**
      * Order matters. If you want sequential inputs, place the Chips in order of when they're used.
-     * Clocked Chips should be last to ensure their combinational inputs have propagated
      */
     public static HashMap<String, Chip> chipMap = new HashMap<>();
 
