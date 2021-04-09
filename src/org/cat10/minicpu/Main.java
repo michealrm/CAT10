@@ -21,6 +21,8 @@ public class Main {
         // Print bytecode!
         for(byte b : mem)
             System.out.printf("%x ", b);
+
+        // CPU.run();
     }
 
 }

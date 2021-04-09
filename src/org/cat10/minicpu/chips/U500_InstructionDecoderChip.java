@@ -15,9 +15,9 @@ package org.cat10.minicpu.chips;
  *
  * Outputs (Control)
  */
-public class InstructionDecoderChip extends Chip {
+public class U500_InstructionDecoderChip extends Chip {
 
-    public InstructionDecoderChip() {
+    public U500_InstructionDecoderChip() {
         super("U500");
     }
 
