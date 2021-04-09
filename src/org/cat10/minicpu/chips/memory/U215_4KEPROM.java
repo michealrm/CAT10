@@ -32,7 +32,7 @@ public class U215_4KEPROM extends Chip {
     @Override
     public void evaluateOut() {
         if(getInput("ChipSelect") != 0)
-            getChip("U220").putOutput("8BitDataLine", readonly.get(getInput("MemAddr")));
+            getChip("U220").putOutput("8BitDataLine", readonly.get(getInput("MemAddr") ));
     }
 }
 
