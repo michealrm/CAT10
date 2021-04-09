@@ -22,11 +22,6 @@ public class U500_InstructionDecoderChip extends Chip {
     }
 
     @Override
-    public void updateInput() {
-        // Read MEMs from memory
-    }
-
-    @Override
     public void evaluateOut() {
 
     }

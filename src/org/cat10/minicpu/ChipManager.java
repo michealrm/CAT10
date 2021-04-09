@@ -32,7 +32,6 @@ public class ChipManager {
      */
     public static void updateChips() {
         for(Chip chip : chipMap.values()) {
-            chip.updateInput();
             chip.evaluateOut();
         }
     }

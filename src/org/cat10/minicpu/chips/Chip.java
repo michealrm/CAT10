@@ -37,7 +37,6 @@ public abstract class Chip {
         localOutputs.put(key, value);
     }
 
-    public abstract void updateInput();
     public abstract void evaluateOut();
 
 }
