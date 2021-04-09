@@ -1,0 +1,5 @@
+Addc [$abcd],r3
+Not r3
+Not [$abcd]
+Push r3
+Pop r3
