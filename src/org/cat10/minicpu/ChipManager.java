@@ -5,26 +5,33 @@ import org.cat10.minicpu.chips.Chip;
 import java.util.HashMap;
 
 /**
- * Handles combinational and clocked chips.
- * Combinational chips should access chipMap in their eval
+ * ChipManager handles execution of clocked and combinational chips. For the order of execution, you should place
+ * chips in order of: combinational chips in order of flow, clocked chips. You can think of it like this: all the
+ * inputs propagate, then the clock ticks.
+ *
+ * ChipManager is static, so you can only manage one set of chips during execution, i.e. the CPU cannot run multiple
+ * instances in one execution. Maybe some use cases will pop up later, but for this project it's unnecessary. Also,
+ * it's nice and a bit more clean to static import ChipManager.getChip and be able to access a chip with getChip("...")
+ * within another chip.
  */
 public class ChipManager {
 
     /**
-     * Order matters because for each chip, we update the input and evaluate the output. So new outputs will only
-     * be used in another input if that Chip we're using for output is before the Chip using it for input.
-     * Basically, if you want sequential inputs, place the Chips in order of when they're used
-     * Clocked Chips should be first
+     * Order matters. If you want sequential inputs, place the Chips in order of when they're used.
+     * Clocked Chips should be last to ensure their combinational inputs have propagated
      */
-    public HashMap<String, Chip> chipHM = new HashMap<>();
+    public static HashMap<String, Chip> chipMap = new HashMap<>();
 
+
+    public static Chip getChip(String chipID) {
+        return chipMap.get(chipID);
+    }
 
     /**
      * For each chip: update input and execute output
-     * Order matters.
      */
-    public void updateChips() {
-        for(Chip chip : chipHM.values()) {
+    public static void updateChips() {
+        for(Chip chip : chipMap.values()) {
             chip.updateInput();
             chip.evaluateOut();
         }

@@ -1,14 +1,21 @@
 package org.cat10.minicpu.chips;
 
+/**
+ * Inputs:
+ * getInput("MEM_1")
+ * getInput("MEM_2")
+ * getInput("MEM_3")
+ * getInput("MEM_4")
+ * getChip("U110").getOutput("FLAGS")
+ *
+ * Outputs
+ * getChip("U105").getInput("InstrLen")
+ * getChip("U106").getInput("Offset")
+ * getOutput("INST")
+ *
+ * Outputs (Control)
+ */
 public class InstructionDecoderChip extends Chip {
-
-    // Inputs
-    byte MEM_1;
-    byte MEM_2;
-    byte MEM_3;
-    byte MEM_4;
-
-    // Output
 
     public InstructionDecoderChip() {
         super("U500");

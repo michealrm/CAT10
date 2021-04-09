@@ -2,6 +2,37 @@ package org.cat10.minicpu.assembler;
 
 public class Parser {
 
+    private class ParserException extends Exception
+    {
+        public int iLineNr;
+        public int iColNr;
+        public String diagnostic;
+        public String sourceFileName;
+        // constructor
+        public ParserException(int iLineNr, int iColNr, String diagnostic, String sourceFileName)
+        {
+            this.iLineNr = iLineNr + 1;
+            this.iColNr = iColNr;
+            this.diagnostic = diagnostic;
+            this.sourceFileName = sourceFileName;
+        }
+
+        public String toString()
+        {
+            StringBuffer sb = new StringBuffer();
+            sb.append("Line ");
+            sb.append(iLineNr);
+            sb.append(" ");
+            sb.append("Col ");
+            sb.append(iColNr);
+            sb.append(" ");
+            sb.append(diagnostic);
+            sb.append(", File: ");
+            sb.append(sourceFileName);
+            return sb.toString();
+        }
+    }
+
     private final Scanner scan;
     private final byte[] sourceByteCode;  // Will place into RAM
     private int bcIndex;            // Index in sourceByteCode. Placed on a valid byte to write
@@ -112,7 +143,7 @@ public class Parser {
                         writeBytes((byte) 0x80, (byte) (op1Reg | op2Reg));
                     }
                     else {
-                        errorWithCurrent("but first operand was a 8 bit register, so we're expecting an 8 bit operand");
+                        errorWithCurrent("but first operand was a 16 bit register, so we're expecting a matching 16 bit second operand");
                     }
                 }
                 // Second operand is 16 bit reg. First operand must be 16 bits
@@ -122,7 +153,7 @@ public class Parser {
                         writeBytes((byte) 0x88, (byte) (op1Reg | op2Reg));
                     }
                     else {
-                        errorWithCurrent("but first operand was a 8 bit register, so we're expecting a matching 8 bit operand");
+                        errorWithCurrent("but first operand was a 8 bit register, so we're expecting a matching 8 bit second operand");
                     }
                 }
                 else {
@@ -490,7 +521,7 @@ public class Parser {
 
         if(operandNumber == 1)
             regByte <<= 4; // Register 1 in place of the 1s in 1111 0000 for 1 byte encoding
-        
+
         return regByte;
     }
 
