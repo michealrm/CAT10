@@ -16,6 +16,7 @@ public class U15_InstPointer extends Chip {
 
     public U15_InstPointer() {
         super("U15");
+        putOutput("IP", (byte) 0xF000); // Default entrypoint in EPROM
     }
 
     @Override

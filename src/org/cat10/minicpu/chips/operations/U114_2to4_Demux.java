@@ -30,55 +30,42 @@ public class U114_2to4_Demux extends Chip {
 
     @Override
     public void evaluateOut() {
-        if(getInput("OutputEnableA") != 0) {
-            switch(getInput("SelA")) {
-                case 0:
-                    getChip("U10").putOutput("ChipSelect", (byte)1);
-                    getChip("U10").putOutput("D", getChip("U118A").getOutput("A"));
-                    break;
-                case 1:
-                    getChip("U11").putOutput("ChipSelect", (byte)1);
-                    getChip("U11").putOutput("D", getChip("U118A").getOutput("A"));
-                    break;
-                case 2:
-                    getChip("U12").putOutput("ChipSelect", (byte)1);
-                    getChip("U12").putOutput("D", getChip("U118A").getOutput("A"));
-                    break;
-                case 3:
-                    getChip("U13").putOutput("ChipSelect", (byte)1);
-                    getChip("U13").putOutput("D", getChip("U118A").getOutput("A"));
-                    break;
-            }
-        }
-        if(getInput("OutputEnableB") != 0) {
-            switch(getInput("SelB")) {
+        demux("A");
+        demux("B");
+    }
+
+    /**
+     * A function to handle A and B lines and selections for U114 DEMUX
+     * The `type` concatenation (for the A demux) is used for "SelA", "OutputEnableA", and the "A" output wire on U118A chip
+     * @param type Either A or B
+     */
+    private void demux(String type) {
+        if(getInput("OutputEnable" + type) != 0) {
+            switch(getInput("Sel" + type)) {
                 case 0:
                     getChip("U10").putOutput("ChipSelect", (byte)1);
                     getChip("U11").putOutput("ChipSelect", (byte)0);
                     getChip("U12").putOutput("ChipSelect", (byte)0);
                     getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U10").putOutput("D", getChip("U118B").getOutput("B"));
+                    getChip("U10").putOutput("D", getChip("U118" + type).getOutput(type));
                     break;
                 case 1:
                     getChip("U10").putOutput("ChipSelect", (byte)0);
                     getChip("U11").putOutput("ChipSelect", (byte)1);
                     getChip("U12").putOutput("ChipSelect", (byte)0);
                     getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U11").putOutput("D", getChip("U118B").getOutput("B"));
+                    getChip("U11").putOutput("D", getChip("U118" + type).getOutput(type));
                     break;
                 case 2:
                     getChip("U10").putOutput("ChipSelect", (byte)0);
                     getChip("U11").putOutput("ChipSelect", (byte)0);
                     getChip("U12").putOutput("ChipSelect", (byte)1);
                     getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U12").putOutput("D", getChip("U118B").getOutput("B"));
+                    getChip("U12").putOutput("D", getChip("U118" + type).getOutput("A"));
                     break;
                 case 3:
-                    getChip("U10").putOutput("ChipSelect", (byte)0);
-                    getChip("U11").putOutput("ChipSelect", (byte)0);
-                    getChip("U12").putOutput("ChipSelect", (byte)0);
                     getChip("U13").putOutput("ChipSelect", (byte)1);
-                    getChip("U13").putOutput("D", getChip("U118A").getOutput("A"));
+                    getChip("U13").putOutput("D", getChip("U118" + type).getOutput("A"));
                     break;
             }
         }
