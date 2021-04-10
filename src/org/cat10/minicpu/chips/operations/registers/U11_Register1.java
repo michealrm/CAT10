@@ -5,6 +5,15 @@ import org.cat10.minicpu.chips.Chip;
 import static org.cat10.minicpu.ChipManager.getChip;
 import static org.cat10.minicpu.util.CAT10Util.Not;
 
+/**
+ * Inputs:
+ * getChip("U999").getOutput("clock")
+ * getInput("ChipSelect")
+ * getInput("D")
+ *
+ * Outputs
+ * getOutput("Q")
+ */
 public class U11_Register1 extends Chip {
 
     byte masterNandOutput1a;

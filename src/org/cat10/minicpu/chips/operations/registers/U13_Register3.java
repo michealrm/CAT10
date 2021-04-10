@@ -5,6 +5,15 @@ import org.cat10.minicpu.chips.Chip;
 import static org.cat10.minicpu.ChipManager.getChip;
 import static org.cat10.minicpu.util.CAT10Util.Not;
 
+/**
+ * Inputs:
+ * getChip("U999").getOutput("clock")
+ * getInput("ChipSelect")
+ * getInput("D")
+ *
+ * Outputs
+ * getOutput("Q")
+ */
 public class U13_Register3 extends Chip {
 
     byte masterNandOutput1a;
@@ -15,7 +24,7 @@ public class U13_Register3 extends Chip {
     byte slaveNandOutput1b;
     byte slaveNandOutput2a;
     byte slaveNandOutput2b;
-    
+
     public U13_Register3() {
         super("U13");
     }

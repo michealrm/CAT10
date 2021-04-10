@@ -3,6 +3,11 @@ package org.cat10.minicpu;
 import org.cat10.minicpu.chips.instruction.U15_InstPointer;
 import org.cat10.minicpu.chips.instruction.U500_InstructionDecoderChip;
 import org.cat10.minicpu.chips.memory.*;
+import org.cat10.minicpu.chips.operations.*;
+import org.cat10.minicpu.chips.operations.registers.U10_Register0;
+import org.cat10.minicpu.chips.operations.registers.U11_Register1;
+import org.cat10.minicpu.chips.operations.registers.U12_Register2;
+import org.cat10.minicpu.chips.operations.registers.U13_Register3;
 
 /**
  * @see ChipManager for note about static CPU
@@ -33,6 +38,21 @@ public class CPU {
         ChipManager.chipMap.put("U212", new U212_4KRAM());
         ChipManager.chipMap.put("U213", new U213_4KRAM());
         ChipManager.chipMap.put("U215", new U215_4KEPROM(Main.code));
+
+        ChipManager.chipMap.put("U112", new U112_8to1_Mux());
+        ChipManager.chipMap.put("U113", new U113_8to1_Mux());
+
+        // And, or, etc to get ALU and SP
+
+        ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());
+        ChipManager.chipMap.put("U118B", new U118B_8to1_Mux());
+        ChipManager.chipMap.put("U114", new U114_2to4_Demux());
+
+        ChipManager.chipMap.put("U10", new U10_Register0());
+        ChipManager.chipMap.put("U11", new U11_Register1());
+        ChipManager.chipMap.put("U12", new U12_Register2());
+        ChipManager.chipMap.put("U13", new U13_Register3());
+
     }
 
     public static void run() {

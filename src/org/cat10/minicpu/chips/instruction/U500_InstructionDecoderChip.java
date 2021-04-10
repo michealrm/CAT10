@@ -13,7 +13,8 @@ import org.cat10.minicpu.chips.Chip;
  * Outputs
  * getChip("U105").getInput("InstrLen")
  * getChip("U106").getInput("Offset")
- * getOutput("INST")
+ * getOutput("INSTLower")
+ * getOutput("INSTUpper")
  *
  * Outputs (Control)
  */
