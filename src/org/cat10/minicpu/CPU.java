@@ -3,6 +3,8 @@ package org.cat10.minicpu;
 import org.cat10.minicpu.chips.instruction.U15_InstPointer;
 import org.cat10.minicpu.chips.instruction.U500_InstructionDecoderChip;
 import org.cat10.minicpu.chips.memory.*;
+import org.cat10.minicpu.chips.operations.*;
+import org.cat10.minicpu.chips.operations.registers.*;
 
 /**
  * @see ChipManager for note about static CPU
@@ -15,9 +17,33 @@ public class CPU {
      * Set chips
      */
     static {
+    	// INSTRUCTION CHIPS
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
         ChipManager.chipMap.put("U15", new U15_InstPointer());
 
+        // OPERATIONS CHIPS
+        ChipManager.chipMap.put("U118_A", new U118_A());
+        ChipManager.chipMap.put("U118_B", new U118_B());
+        ChipManager.chipMap.put("U114", new U114_DEMUX());
+        
+        // REGISTER CHIPS
+        ChipManager.chipMap.put("U10", new U10_Register0());
+        ChipManager.chipMap.put("U11", new U11_Register1());
+        ChipManager.chipMap.put("U12", new U12_Register2());
+        ChipManager.chipMap.put("U13", new U13_Register3());
+        
+        // OPERATIONS CHIPS
+        ChipManager.chipMap.put("U112", new U112_MUX());
+        
+        ChipManager.chipMap.put("U100", new U100_AddSub());
+        ChipManager.chipMap.put("U101", new U101_AND());
+        ChipManager.chipMap.put("U102", new U102_OR());
+        ChipManager.chipMap.put("U103", new U103_XOR());
+        ChipManager.chipMap.put("U104", new U104_NOT());
+        ChipManager.chipMap.put("U107", new U107_AddSub());
+        ChipManager.chipMap.put("U110", new U110_Flags());
+        
+        // MEMORY CHIPS
         ChipManager.chipMap.put("U200", new U200_4KRAM());
         ChipManager.chipMap.put("U201", new U201_4KRAM());
         ChipManager.chipMap.put("U202", new U202_4KRAM());
