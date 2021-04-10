@@ -23,6 +23,13 @@ public class CPU {
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
         ChipManager.chipMap.put("U15", new U15_InstPointer());
 
+        // Register mux put on data line before memory for things like mov [$ABCD], R1
+        // We need the register mux's output to be put on the data line to pass into the U116 mux on the instruction slide
+        ChipManager.chipMap.put("U112", new U112_8to1_Mux());
+        ChipManager.chipMap.put("U113", new U113_8to1_Mux());
+
+        // And, or, etc to get ALU and SP
+
         ChipManager.chipMap.put("U200", new U200_4KRAM());
         ChipManager.chipMap.put("U201", new U201_4KRAM());
         ChipManager.chipMap.put("U202", new U202_4KRAM());
@@ -39,10 +46,6 @@ public class CPU {
         ChipManager.chipMap.put("U213", new U213_4KRAM());
         ChipManager.chipMap.put("U215", new U215_4KEPROM(Main.code));
 
-        ChipManager.chipMap.put("U112", new U112_8to1_Mux());
-        ChipManager.chipMap.put("U113", new U113_8to1_Mux());
-
-        // And, or, etc to get ALU and SP
 
         ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());
         ChipManager.chipMap.put("U118B", new U118B_8to1_Mux());
