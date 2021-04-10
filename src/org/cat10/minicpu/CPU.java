@@ -72,11 +72,6 @@ public class CPU {
         ChipManager.chipMap.put("U12", new U12_Register2());
         ChipManager.chipMap.put("U13", new U13_Register3());
 
-        ChipManager.chipMap.put("U10", new U10_Register0());
-        ChipManager.chipMap.put("U11", new U11_Register1());
-        ChipManager.chipMap.put("U12", new U12_Register2());
-        ChipManager.chipMap.put("U13", new U13_Register3());
-
     }
 
     public static void run() {
