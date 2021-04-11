@@ -26,6 +26,10 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U114_2to4_Demux extends Chip {
     public U114_2to4_Demux() {
         super("U114");
+        putInput("OutputEnableA", (byte) 0);
+        putInput("SelA", (byte) 0);
+        putInput("SelB", (byte) 0);
+        putInput("OutputEnableB", (byte) 0);
     }
 
     @Override

@@ -24,6 +24,8 @@ public class U113_8to1_Mux extends Chip {
 
     public U113_8to1_Mux() {
         super("U113");
+        putInput("sel", (byte) 0);
+        putOutput("DATAUpper", (byte) 0);
     }
 
     @Override

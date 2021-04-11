@@ -19,12 +19,15 @@ public class U202_4KRAM extends Chip {
     public U202_4KRAM() {
         super("U202");
         memory = new byte[0x1000];
+
+        putInput("MemAddr", (byte) 0);
+        putInput("ChipSelect", (byte) 0);
     }
 
     @Override
     public void evaluateOut() {
         if(getInput("ChipSelect") != 0)
-            getChip("U220").putOutput("8BitDataLine", memory[getInput("MemAddr")]);
+            getChip("U220").putOutput("8BitDataBus", memory[(getInput("MemAddrLower") & 0xFF) << 4 | getInput("MemAddrUpper")]);
     }
 }
 

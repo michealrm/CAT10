@@ -21,19 +21,21 @@ public class U118A_8to1_Mux extends Chip {
 
     public U118A_8to1_Mux() {
         super("U118A");
+        putInput("sel", (byte) 0);
+        putOutput("A", (byte) 0);
     }
 
     @Override
     public void evaluateOut() {
         switch(getInput("sel")) {
             case 0:
-                putOutput("A", getChip("U112").getOutput("RegA"));
+                putOutput("A", getChip("U112").getOutput("DATALower"));
                 break;
             case 1:
-                putOutput("A", getChip("U14").getOutput("SP"));
+                putOutput("A", getChip("U14").getOutput("SPLower"));
                 break;
             case 2:
-                putOutput("A", getChip("U500").getOutput("INST"));
+                putOutput("A", getChip("U500").getOutput("INSTLower"));
                 break;
             case 3:
                 putOutput("A", getChip("U111").getOutput("ALU"));

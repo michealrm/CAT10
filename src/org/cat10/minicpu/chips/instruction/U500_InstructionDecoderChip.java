@@ -1,6 +1,7 @@
 package org.cat10.minicpu.chips.instruction;
 
 import org.cat10.minicpu.chips.Chip;
+import org.cat10.minicpu.util.CAT10Util;
 
 import static org.cat10.minicpu.ChipManager.getChip;
 
@@ -22,6 +23,8 @@ import static org.cat10.minicpu.ChipManager.getChip;
  */
 public class U500_InstructionDecoderChip extends Chip {
 
+    byte selMemMux = 0;
+    boolean startOfExecution = true;
     boolean isNewInstruction = true;
     boolean isOpcode = false; // MEM_1 contains opcode that has already been read from memory using isNewInstruction
                               // in the previous cycle
@@ -38,6 +41,17 @@ public class U500_InstructionDecoderChip extends Chip {
 
     public U500_InstructionDecoderChip() {
         super("U500");
+        putInput("MEM_1", (byte) 0);
+        putInput("MEM_2", (byte) 0);
+        putInput("MEM_3", (byte) 0);
+        putInput("MEM_4", (byte) 0);
+        putOutput("INSTLower", (byte) 0);
+        putOutput("INSTUpper", (byte) 0);
+        putOutput("InstLen", (byte) 0);
+        putOutput("Offset", (byte) 0);
+
+        // Control
+        putOutput("ReadWrite", (byte) 0);
     }
 
     @Override
@@ -46,6 +60,46 @@ public class U500_InstructionDecoderChip extends Chip {
 
         if(isNewInstruction) {
             isOpcode = true; // Next cycle will be start of instruction with opcode loaded in MEM_1
+
+            // Shift memory registers by instruction length EX: Length=3, shift 000X
+            // 2 to 4 DEMUX, sel=InstLen
+            for(byte i = getOutput("InstLen"); i < 4; i++) {
+                switch(i) { // Shift i - InstLen
+                    case 0:
+                        putInput("MEM_1", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                    case 1:
+                        putInput("MEM_2", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                    case 2:
+                        putInput("MEM_3", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                    case 3:
+                        putInput("MEM_4", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                }
+            }
+
+            // Now we need to read from memory. If we just shifted the memory registers, that should be easy.
+            // We would just set selMemMux to 4 - InstLen, demux that, and perform read, decrementing the offset as we go
+            // TODO: We need this working through multiple cycles
+            if(startOfExecution) {
+                selMemMux = 0;
+                startOfExecution = false;
+            } else {
+                selMemMux = CAT10Util.subtractor((byte) 4, getOutput("InstLen")).sum;
+            }
+            while(selMemMux < 4) {
+                // 2 to 4 DEMUX
+                switch(selMemMux) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
+
+                selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
+            }
 
             putOutput("InstLen", (byte) 0);
 
@@ -86,5 +140,19 @@ public class U500_InstructionDecoderChip extends Chip {
             }
         }
 
+    }
+
+    private byte mem_2to4_Demux(int sel) {
+        switch(sel) {
+            case 0:
+                return getInput("MEM_1");
+            case 1:
+                return getInput("MEM_2");
+            case 2:
+                return getInput("MEM_3");
+            case 3:
+                return getInput("MEM_4");
+        }
+        return (byte) 0; // Should never happen
     }
 }

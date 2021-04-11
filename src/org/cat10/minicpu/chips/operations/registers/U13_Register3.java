@@ -27,6 +27,9 @@ public class U13_Register3 extends Chip {
 
     public U13_Register3() {
         super("U13");
+        putInput("ChipSelect", (byte) 0);
+        putInput("D", (byte) 0);
+        putOutput("Q", (byte) 0);
     }
 
     @Override

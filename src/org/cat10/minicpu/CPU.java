@@ -1,7 +1,7 @@
 package org.cat10.minicpu;
 
-import org.cat10.minicpu.chips.instruction.U15_InstPointer;
-import org.cat10.minicpu.chips.instruction.U500_InstructionDecoderChip;
+import org.cat10.minicpu.chips.U999_Clock;
+import org.cat10.minicpu.chips.instruction.*;
 import org.cat10.minicpu.chips.memory.*;
 import org.cat10.minicpu.chips.operations.*;
 import org.cat10.minicpu.chips.operations.registers.U10_Register0;
@@ -22,6 +22,11 @@ public class CPU {
     static {
     	// INSTRUCTION CHIPS
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
+        ChipManager.chipMap.put("U105", new U105_Adder_IPInc());
+        ChipManager.chipMap.put("U106", new U106_Adder_IPRel());
+
+        ChipManager.chipMap.put("U115", new U115_4to1_Mux());
+
         ChipManager.chipMap.put("U15", new U15_InstPointer());
 
         // Register mux put on data line before memory for things like mov [$ABCD], R1
@@ -40,6 +45,10 @@ public class CPU {
         ChipManager.chipMap.put("U110", new U110_Flags());
         
         // MEMORY CHIPS
+        ChipManager.chipMap.put("U116", new U116_4to1_Mux());
+
+        ChipManager.chipMap.put("U220", new U220_4to1_Mux());
+
         ChipManager.chipMap.put("U200", new U200_4KRAM());
         ChipManager.chipMap.put("U201", new U201_4KRAM());
         ChipManager.chipMap.put("U202", new U202_4KRAM());
@@ -56,6 +65,8 @@ public class CPU {
         ChipManager.chipMap.put("U213", new U213_4KRAM());
         ChipManager.chipMap.put("U215", new U215_4KEPROM(Main.code));
 
+        ChipManager.chipMap.put("U221", new U221_TGate());
+
         // OPERATIONS CHIPS
         ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());
         ChipManager.chipMap.put("U118B", new U118B_8to1_Mux());
@@ -67,6 +78,7 @@ public class CPU {
         ChipManager.chipMap.put("U12", new U12_Register2());
         ChipManager.chipMap.put("U13", new U13_Register3());
 
+        ChipManager.chipMap.put("U999", new U999_Clock());
     }
 
     public static void run() {

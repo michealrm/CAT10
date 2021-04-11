@@ -27,6 +27,9 @@ public class U12_Register2 extends Chip {
 
     public U12_Register2() {
         super("U12");
+        putInput("ChipSelect", (byte) 0);
+        putInput("D", (byte) 0);
+        putOutput("Q", (byte) 0);
     }
 
     @Override
