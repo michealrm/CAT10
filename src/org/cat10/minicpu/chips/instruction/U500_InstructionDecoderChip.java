@@ -57,9 +57,9 @@ public class U500_InstructionDecoderChip extends Chip {
                 isOpcode = false;
                 opCode = getInput("MEM_1");
 
-                getChip("U115").putInput("sel", (byte) 2);
-                getChip("U116").putInput("sel", (byte) 0);
-                putOutput("ReadWrite", (byte) 0);
+                getChip("U115").putInput("sel", (byte) 2); // Select IPInc since instruction length for fetch is 0
+                getChip("U116").putInput("sel", (byte) 0); // Select IP
+                putOutput("ReadWrite", (byte) 0); // Read
 
                 putOutput("InstLen", (byte) 1);
             } else {
@@ -68,8 +68,10 @@ public class U500_InstructionDecoderChip extends Chip {
                         regOperand1 = (byte) ((getInput("MEM_1") & 0xC0) >> 6); // XX00 0000
                         regOperand2 = (byte) ((getInput("MEM_1") & 0x0C) >> 2); // 0000 XX00
 
+                        // Select register operand 2 to be selected in U112 MUX to DATALower bus
                         getChip("U112").putInput("sel", regOperand2);
 
+                        // Don't increment IP because we need another cycle to propagate the value into the register
                         putOutput("InstLen", (byte) 0);
                     } else {
                         getChip("U118A").putInput("sel", (byte) 0); // Select DATA
@@ -77,11 +79,10 @@ public class U500_InstructionDecoderChip extends Chip {
                         getChip("U114").putInput("OutputEnableB", (byte) 0);
 
                         onCycle2 = false;
-                        putOutput("InstLen", (byte) 1);
+                        putOutput("InstLen", (byte) 1); // Increment to the next instruction
                         isNewInstruction = true;
                     }
                 }
-                // Maybe an else case that panics if we can't find the opcode
             }
         }
 
