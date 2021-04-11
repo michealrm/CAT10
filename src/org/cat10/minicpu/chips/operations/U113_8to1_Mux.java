@@ -18,7 +18,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
  * getInput("sel")
  *
  * Outputs
- * getOutput("RegB")
+ * getOutput("DATAUpper")
  */
 public class U113_8to1_Mux extends Chip {
 
@@ -30,28 +30,28 @@ public class U113_8to1_Mux extends Chip {
     public void evaluateOut() {
         switch(getInput("sel")) {
             case 0:
-                putOutput("RegB", getChip("U10").getOutput("Q"));
+                putOutput("DATAUpper", getChip("U10").getOutput("Q"));
                 break;
             case 1:
-                putOutput("RegB", getChip("U11").getOutput("Q"));
+                putOutput("DATAUpper", getChip("U11").getOutput("Q"));
                 break;
             case 2:
-                putOutput("RegB", getChip("U12").getOutput("Q"));
+                putOutput("DATAUpper", getChip("U12").getOutput("Q"));
                 break;
             case 3:
-                putOutput("RegB", getChip("U13").getOutput("Q"));
+                putOutput("DATAUpper", getChip("U13").getOutput("Q"));
                 break;
             case 4:
-                putOutput("RegB", getChip("U221").getOutput("MEM"));
+                putOutput("DATAUpper", getChip("U221").getOutput("MEM"));
                 break;
             case 5:
-                putOutput("RegB", getChip("U110").getOutput("FLAGS"));
+                putOutput("DATAUpper", getChip("U110").getOutput("FLAGS"));
                 break;
             case 6:
-                putOutput("RegB", getChip("U500").getOutput("INST"));
+                putOutput("DATAUpper", getChip("U500").getOutput("INST"));
                 break;
             case 7:
-                putOutput("RegB", getChip("U15").getOutput("IP"));
+                putOutput("DATAUpper", getChip("U15").getOutput("IP"));
                 break;
         }
     }

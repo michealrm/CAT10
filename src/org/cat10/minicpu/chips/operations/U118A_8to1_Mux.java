@@ -7,8 +7,8 @@ import static org.cat10.minicpu.ChipManager.getChip;
 /**
  * Inputs
  * 0 getChip("U112").getOutput("RegA")
- * 1 getChip("U14").getOutput("SPLowerByte")
- * 2 getChip("U500").getOutput("INSTLower")
+ * 1 getChip("U14").getOutput("SP")
+ * 2 getChip("U500").getOutput("INST")
  * 3 getChip("U111").getOutput("ALU")
  * 5 getChip("U221").getOutput("MEM")
  * getInput("sel"), 3 bits
@@ -30,10 +30,10 @@ public class U118A_8to1_Mux extends Chip {
                 putOutput("A", getChip("U112").getOutput("RegA"));
                 break;
             case 1:
-                putOutput("A", getChip("U14").getOutput("SPLowerByte"));
+                putOutput("A", getChip("U14").getOutput("SP"));
                 break;
             case 2:
-                putOutput("A", getChip("U500").getOutput("INSTLower"));
+                putOutput("A", getChip("U500").getOutput("INST"));
                 break;
             case 3:
                 putOutput("A", getChip("U111").getOutput("ALU"));

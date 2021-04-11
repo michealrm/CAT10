@@ -10,13 +10,15 @@ import org.cat10.minicpu.chips.Chip;
  * getInput("ChipSelect")
  *
  * Outputs
- * getOutput("IP")
+ * getOutput("IPLower")
+ * getOutput("IPUpper")
  */
 public class U15_InstPointer extends Chip {
 
     public U15_InstPointer() {
         super("U15");
-        putOutput("IP", (byte) 0xF000); // Default entrypoint in EPROM
+        putOutput("IPLower", (byte) 0xF0); // Default entrypoint in EPROM
+        putOutput("IPUpper", (byte) 0x00);
     }
 
     @Override

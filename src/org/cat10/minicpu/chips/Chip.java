@@ -10,12 +10,12 @@ import java.util.HashMap;
 public abstract class Chip {
 
     public String chipID = "";
-    public HashMap<String, Byte> inputs;
+    public HashMap<String, Byte> inputs = new HashMap<>();
 
     // May be used for outputs with many wires, so we keep the reference local to the Chip outputting the wires
     // Note that all outputs of a chip are assigned in `localOutputs`. The standard may to update another chip's
     //  input is, for example, getChip("U105").putInput("InstrLen", 3)
-    public HashMap<String, Byte> localOutputs;
+    public HashMap<String, Byte> localOutputs = new HashMap<>();
 
     public Chip(String chipID) {
         this.chipID = chipID;

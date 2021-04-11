@@ -23,8 +23,9 @@ public class Main {
         // Print bytecode!
         for(byte b : code)
             System.out.printf("%x ", b);
+        System.out.println();
 
-        // CPU.run();
+        CPU.run();
     }
 
 }

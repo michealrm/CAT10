@@ -27,6 +27,9 @@ public class U215_4KEPROM extends Chip {
         super("U215");
         readonly = ByteBuffer.wrap(memory);
         readonly.asReadOnlyBuffer();
+
+        putInput("MemAddr", (byte) 0);
+        putInput("ChipSelect", (byte) 0);
     }
 
     @Override
