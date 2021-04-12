@@ -11,7 +11,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
  * getInput("sel")
  *
  * Outputs
- * getOutput("FlagsOut")
+ * getOutput("FLAGS")
  */
 
 public class U120_2to1_Mux extends Chip{
@@ -26,16 +26,10 @@ public class U120_2to1_Mux extends Chip{
 	public void evaluateOut() {
 		switch(getInput("FLAGS")) {
 			case 0:
-				putOutput("FlagsOut", getChip("U100").getOutput(""));
+				putOutput("FlagsOut", getChip("U100").getOutput("FLAGS"));
 				break;
 			case 1:
-				putOutput("FlagsOut", getChip("U100").getOutput(""));
-				break;
-			case 2:
-				putOutput("FlagsOut", getChip("U100").getOutput(""));
-				break;
-			case 3:
-				putOutput("FlagsOut", getChip("U100").getOutput(""));
+				putOutput("FlagsOut", getChip("U100").getOutput("FLAGS"));
 				break;
 		}
 		
