@@ -71,6 +71,9 @@ public class CPU {
         ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());
         ChipManager.chipMap.put("U118B", new U118B_8to1_Mux());
         ChipManager.chipMap.put("U114", new U114_2to4_Demux());
+        ChipManager.chipMap.put("U111", new U111_8to1_Mux());
+        ChipManager.chipMap.put("U117", new U117_2to1_Mux());
+        ChipManager.chipMap.put("U120", new U120_2to1_Mux());
 
         // REGISTER CHIPS
         ChipManager.chipMap.put("U10", new U10_Register0());
