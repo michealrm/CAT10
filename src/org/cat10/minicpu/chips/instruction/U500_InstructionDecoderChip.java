@@ -57,24 +57,33 @@ public class U500_InstructionDecoderChip extends Chip {
             isNewInstruction = true;
             startOfExecution = false;
             putOutput("InstLen", (byte) 4); // So selMemMux is set to 0 to read all MEM registers
+            selMemMux = 0;
         }
 
         if(isNewInstruction) {
             readingMemory = true;
-            selMemMux = CAT10Util.subtractor((byte) 4, getOutput("InstLen")).sum;
+            selMemMux = (byte) (4 - getOutput("InstLen"));
 
             // SHIFT memory registers by instruction length EX: Length=3, shift into XXXX -> X000 where X are the valid bits
-            for(byte i = getOutput("InstLen"); i != 4; i = CAT10Util.fullAdderByte((byte) 0, i, (byte) 1).sum) {
+            for(byte i = 0; (i + getOutput("InstLen")) != 4; i++) {
                 // Shifting using a 2 to 4 DEMUX, sel=InstLen
+                //
+                // For example InstLen = 2, i starts at 0
+                // switch i=0, select MEM_1, put MEM_3 into MEM_1
+                // switch i=1, select MEM_2, put MEM_4 into MEM_2
+                // Done!
                 switch(i) { // Shift i - InstLen
                     case 0:
-                        putInput("MEM_1", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                        putInput("MEM_1", mem_2to4_Demux(i + getOutput("InstLen")));
+                        break;
                     case 1:
-                        putInput("MEM_2", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                        putInput("MEM_2", mem_2to4_Demux(i + getOutput("InstLen")));
+                        break;
                     case 2:
-                        putInput("MEM_3", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                        putInput("MEM_3", mem_2to4_Demux(i + getOutput("InstLen")));
+                        break;
                     case 3:
-                        putInput("MEM_4", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
+                        putInput("MEM_4", mem_2to4_Demux(i + getOutput("InstLen")));
                 }
             }
 
@@ -84,6 +93,8 @@ public class U500_InstructionDecoderChip extends Chip {
             getChip("U115").putInput("sel", (byte) 2);
             getChip("U116").putInput("sel", (byte) 0);
             putOutput("ReadWrite", (byte) 0);
+            isNewInstruction = false;
+            return;
         }
 
         // Instruction decode
@@ -120,7 +131,8 @@ public class U500_InstructionDecoderChip extends Chip {
                 selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
                 putOutput("InstLen", (byte) 1);
             } else {
-                // We've read all memory
+                // We've read MEM_1-4, now to read opcode
+                isOpcode = true;
                 readingMemory = false;
             }
         } else {

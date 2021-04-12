@@ -2,20 +2,33 @@ package org.cat10.minicpu.chips.operations;
 
 import org.cat10.minicpu.chips.Chip;
 
-/* NOT *
- * Take in B[0-7]
- * 
- * Output NOT[0-7] to U111
+import static org.cat10.minicpu.ChipManager.getChip;
+
+/**
+ * NOT
+ * Inputs
+ * getChip("U112").getOutput("DATALower")
+ * getChip("U113").getOutput("DATAUpper")
+ * Outputs
+ * getOutput("NOT")
  */
 
 public class U104_NOT extends Chip{
-    public U104_NOT() {
-    	super("U104");
-    }
+	/*
+	 * NOT
+	 * Inputs
+	 * getChip("U112").getOutput("DATALower")
+	 * getChip("U113").getOutput("DATAUpper")
+	 * Outputs
+	 * getOutput("NOT")
+	 */
+	public U104_NOT() {
+		super("U104");
+		putOutput("NOT", (byte) 0);
+	}
 
 	@Override
 	public void evaluateOut() {
-		// TODO Auto-generated method stub
-		
+		putOutput("NOT", (byte)(getChip("U112").getOutput("DATALower") & getChip("U113").getOutput("DATALower")));
 	}
 }

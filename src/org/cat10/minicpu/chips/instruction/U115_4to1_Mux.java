@@ -17,8 +17,8 @@ import static org.cat10.minicpu.ChipManager.getChip;
  * getInput("sel") 0-1
  *
  * Outputs
- * getOutput("NewIPLower")
- * getOutput("NewIPUpper")
+ * getOutput("IPNewLower")
+ * getOutput("IPNewUpper")
  */
 public class U115_4to1_Mux extends Chip {
 
@@ -26,28 +26,28 @@ public class U115_4to1_Mux extends Chip {
         super("U115");
         putInput("sel", (byte) 0);
 
-        putOutput("NewIPLower", (byte) 0);
-        putOutput("NewIPUpper", (byte) 0);
+        putOutput("IPNewLower", (byte) 0);
+        putOutput("IPNewUpper", (byte) 0);
     }
 
     @Override
     public void evaluateOut() {
         switch(getInput("sel")) {
             case 0:
-                putOutput("NewIPLower", getChip("U112").getOutput("DATALower"));
-                putOutput("NewIPUpper", getChip("U113").getOutput("DATAUpper"));
+                putOutput("IPNewLower", getChip("U112").getOutput("DATALower"));
+                putOutput("IPNewUpper", getChip("U113").getOutput("DATAUpper"));
                 break;
             case 1:
-                putOutput("NewIPLower", getChip("U500").getOutput("INSTLower"));
-                putOutput("NewIPUpper", getChip("U500").getOutput("INSTUpper"));
+                putOutput("IPNewLower", getChip("U500").getOutput("INSTLower"));
+                putOutput("IPNewUpper", getChip("U500").getOutput("INSTUpper"));
                 break;
             case 2:
-                putOutput("NewIPLower", getChip("U105").getOutput("IPIncLower"));
-                putOutput("NewIPUpper", getChip("U105").getOutput("IPIncUpper"));
+                putOutput("IPNewLower", getChip("U105").getOutput("IPIncLower"));
+                putOutput("IPNewUpper", getChip("U105").getOutput("IPIncUpper"));
                 break;
             case 3:
-                putOutput("NewIPLower", getChip("U106").getOutput("IPRelLower"));
-                putOutput("NewIPUpper", getChip("U106").getOutput("IPRelUpper"));
+                putOutput("IPNewLower", getChip("U106").getOutput("IPRelLower"));
+                putOutput("IPNewUpper", getChip("U106").getOutput("IPRelUpper"));
                 break;
         }
     }
