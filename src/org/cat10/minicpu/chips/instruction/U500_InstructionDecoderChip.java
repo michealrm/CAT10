@@ -24,7 +24,6 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U500_InstructionDecoderChip extends Chip {
 
     byte selMemMux = 0;
-    boolean latch_MemSetMux = true; // Open
     boolean startOfExecution = true;
     boolean isNewInstruction = true;
     boolean readingMemory = true;
@@ -32,11 +31,6 @@ public class U500_InstructionDecoderChip extends Chip {
                               // in the previous cycle
     byte opCode = 0;
     boolean onCycle2 = false;
-    boolean onReg1 = false;
-    boolean onReg2 = false;
-    boolean onMem1 = false;
-    boolean onMem2 = false;
-    boolean onConst2 = false;
 
     byte regOperand1;
     byte regOperand2;
@@ -61,6 +55,7 @@ public class U500_InstructionDecoderChip extends Chip {
 
         if(startOfExecution) {
             isNewInstruction = true;
+            startOfExecution = false;
             putOutput("InstLen", (byte) 4); // So selMemMux is set to 0 to read all MEM registers
         }
 
@@ -97,6 +92,8 @@ public class U500_InstructionDecoderChip extends Chip {
                 case (byte) 0x80:
                     opCode = (byte) 0x80;
                     putOutput("InstLen", (byte) 2); // May not stay, will be changed to 0 if we need more cycles
+
+                    // TODO: More instructions here
             }
             isOpcode = false;
         }
@@ -129,8 +126,8 @@ public class U500_InstructionDecoderChip extends Chip {
         } else {
             if(opCode == (byte) 0x80) {
                 if(!onCycle2) { // We're on cycle 1. We've read opcode and now we're on the registers byte
-                    regOperand1 = (byte) ((getInput("MEM_1") & 0xC0) >> 6); // XX00 0000
-                    regOperand2 = (byte) ((getInput("MEM_1") & 0x0C) >> 2); // 0000 XX00
+                    regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                    regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
 
                     // Select register operand 2 to be selected in U112 MUX to DATALower bus
                     getChip("U112").putInput("sel", regOperand2);
@@ -143,7 +140,7 @@ public class U500_InstructionDecoderChip extends Chip {
                     getChip("U114").putInput("OutputEnableB", (byte) 0);
 
                     onCycle2 = false;
-                    putOutput("InstLen", (byte) 1); // Increment to the next instruction
+                    putOutput("InstLen", (byte) 2); // Increment to the next instruction
                     isNewInstruction = true;
                 }
             }
