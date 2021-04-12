@@ -20,7 +20,7 @@ public class U15_InstPointer extends Chip {
 
     public U15_InstPointer() {
         super("U15");
-        putInput("ChipSelect", (byte) 0);
+        putInput("ChipSelect", (byte) 1);
 
         putOutput("IPLower", (byte) 0xF0); // Default entrypoint in EPROM
         putOutput("IPUpper", (byte) 0x00);

@@ -24,8 +24,10 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U500_InstructionDecoderChip extends Chip {
 
     byte selMemMux = 0;
+    boolean latch_MemSetMux = true; // Open
     boolean startOfExecution = true;
     boolean isNewInstruction = true;
+    boolean readingMemory = true;
     boolean isOpcode = false; // MEM_1 contains opcode that has already been read from memory using isNewInstruction
                               // in the previous cycle
     byte opCode = 0;
@@ -47,7 +49,7 @@ public class U500_InstructionDecoderChip extends Chip {
         putInput("MEM_4", (byte) 0);
         putOutput("INSTLower", (byte) 0);
         putOutput("INSTUpper", (byte) 0);
-        putOutput("InstLen", (byte) 0);
+        putOutput("InstLen", (byte) 4);
         putOutput("Offset", (byte) 0);
 
         // Control
@@ -56,14 +58,19 @@ public class U500_InstructionDecoderChip extends Chip {
 
     @Override
     public void evaluateOut() {
-        putInput("MEM_1", getChip("U221").getOutput("MEM"));
+
+        if(startOfExecution) {
+            isNewInstruction = true;
+            putOutput("InstLen", (byte) 4); // So selMemMux is set to 0 to read all MEM registers
+        }
 
         if(isNewInstruction) {
-            isOpcode = true; // Next cycle will be start of instruction with opcode loaded in MEM_1
+            readingMemory = true;
+            selMemMux = CAT10Util.subtractor((byte) 4, getOutput("InstLen")).sum;
 
-            // Shift memory registers by instruction length EX: Length=3, shift 000X
-            // 2 to 4 DEMUX, sel=InstLen
-            for(byte i = getOutput("InstLen"); i < 4; i++) {
+            // SHIFT memory registers by instruction length EX: Length=3, shift into XXXX -> X000 where X are the valid bits
+            for(byte i = getOutput("InstLen"); i != 4; i = CAT10Util.fullAdderByte((byte) 0, i, (byte) 1).sum) {
+                // Shifting using a 2 to 4 DEMUX, sel=InstLen
                 switch(i) { // Shift i - InstLen
                     case 0:
                         putInput("MEM_1", mem_2to4_Demux(CAT10Util.subtractor(i, getOutput("InstLen")).sum));
@@ -76,66 +83,68 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
             }
 
-            // Now we need to read from memory. If we just shifted the memory registers, that should be easy.
-            // We would just set selMemMux to 4 - InstLen, demux that, and perform read, decrementing the offset as we go
-            // TODO: We need this working through multiple cycles
-            if(startOfExecution) {
-                selMemMux = 0;
-                startOfExecution = false;
-            } else {
-                selMemMux = CAT10Util.subtractor((byte) 4, getOutput("InstLen")).sum;
-            }
-            while(selMemMux < 4) {
-                // 2 to 4 DEMUX
-                switch(selMemMux) {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                }
+            getChip("U15").putInput("ChipSelect", (byte) 1);
 
-                selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
-            }
-
-            putOutput("InstLen", (byte) 0);
-
+            // Read instruction from memory
             getChip("U115").putInput("sel", (byte) 2);
             getChip("U116").putInput("sel", (byte) 0);
             putOutput("ReadWrite", (byte) 0);
-        } else {
-            if(isOpcode) {
-                isOpcode = false;
-                opCode = getInput("MEM_1");
+        }
 
-                getChip("U115").putInput("sel", (byte) 2); // Select IPInc since instruction length for fetch is 0
-                getChip("U116").putInput("sel", (byte) 0); // Select IP
-                putOutput("ReadWrite", (byte) 0); // Read
+        // Instruction decode
+        if(isOpcode) {
+            switch (getInput("MEM_1")) {
+                case (byte) 0x80:
+                    opCode = (byte) 0x80;
+                    putOutput("InstLen", (byte) 2); // May not stay, will be changed to 0 if we need more cycles
+            }
+            isOpcode = false;
+        }
 
+        if(readingMemory) {
+            // 2 to 4 DEMUX that places memory each cycle
+            switch(selMemMux) {
+                case 0:
+                    putInput("MEM_1", getChip("U221").getOutput("MEM"));
+                    break;
+                case 1:
+                    putInput("MEM_2", getChip("U221").getOutput("MEM"));
+                    break;
+                case 2:
+                    putInput("MEM_3", getChip("U221").getOutput("MEM"));
+                    break;
+                case 3:
+                    putInput("MEM_4", getChip("U221").getOutput("MEM"));
+                    break;
+            }
+
+            // Increment sel to fill the next memory space
+            if(selMemMux != 4) {
+                selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
                 putOutput("InstLen", (byte) 1);
             } else {
-                if(opCode == (byte) 0x80) {
-                    if(!onCycle2) { // We're on cycle 1. We've read opcode and now we're on the registers byte
-                        regOperand1 = (byte) ((getInput("MEM_1") & 0xC0) >> 6); // XX00 0000
-                        regOperand2 = (byte) ((getInput("MEM_1") & 0x0C) >> 2); // 0000 XX00
+                // We've read all memory
+                readingMemory = false;
+            }
+        } else {
+            if(opCode == (byte) 0x80) {
+                if(!onCycle2) { // We're on cycle 1. We've read opcode and now we're on the registers byte
+                    regOperand1 = (byte) ((getInput("MEM_1") & 0xC0) >> 6); // XX00 0000
+                    regOperand2 = (byte) ((getInput("MEM_1") & 0x0C) >> 2); // 0000 XX00
 
-                        // Select register operand 2 to be selected in U112 MUX to DATALower bus
-                        getChip("U112").putInput("sel", regOperand2);
+                    // Select register operand 2 to be selected in U112 MUX to DATALower bus
+                    getChip("U112").putInput("sel", regOperand2);
 
-                        // Don't increment IP because we need another cycle to propagate the value into the register
-                        putOutput("InstLen", (byte) 0);
-                    } else {
-                        getChip("U118A").putInput("sel", (byte) 0); // Select DATA
-                        getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
-                        getChip("U114").putInput("OutputEnableB", (byte) 0);
+                    // Don't increment IP because we need another cycle to propagate the value into the register
+                    putOutput("InstLen", (byte) 0);
+                } else {
+                    getChip("U118A").putInput("sel", (byte) 0); // Select DATA
+                    getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                    getChip("U114").putInput("OutputEnableB", (byte) 0);
 
-                        onCycle2 = false;
-                        putOutput("InstLen", (byte) 1); // Increment to the next instruction
-                        isNewInstruction = true;
-                    }
+                    onCycle2 = false;
+                    putOutput("InstLen", (byte) 1); // Increment to the next instruction
+                    isNewInstruction = true;
                 }
             }
         }
