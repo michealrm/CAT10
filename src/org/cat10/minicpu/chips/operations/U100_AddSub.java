@@ -1,19 +1,29 @@
 package org.cat10.minicpu.chips.operations;
 
 import org.cat10.minicpu.chips.Chip;
-/* Add/Sub */
-/* Take in A(0-7), B(0-7), C(in) */
+import org.cat10.minicpu.util.CAT10Util;
 
-/* Output Flags(0-3) to U120, Sum(0-7) to U111 */
+import static org.cat10.minicpu.ChipManager.getChip;
 
-public class U100_AddSub extends Chip{
-    public U100_AddSub() {
-    	super("U100");
-    }
+/**
+ * Input
+ * getChip("U112").getOutput("DATALower")
+ * getChip("U113").getOutput("DATAUpper")
+ * getChip("U500").getOutput("ALUAdderCarryIn")
+ *
+ * Output
+ * getOutput("SUM")
+ * getOutput("FlagsOut")
+ */
+public class U100_AddSub extends Chip {
+	public U100_AddSub() {
+		super("U100");
+	}
 
 	@Override
 	public void evaluateOut() {
-		// TODO Auto-generated method stub
-		
+		CAT10Util.AdderOutput out = CAT10Util.fullAdderByte(getChip("U500").getOutput("ALUAdderCarryIn"), getChip("U112").getOutput("DATALower"), getChip("U113").getOutput("DATAUpper"));
+		putOutput("SUM", out.sum);
+		putOutput("FlagsOut", out.flags);
 	}
 }

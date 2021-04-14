@@ -18,6 +18,8 @@ import static org.cat10.minicpu.ChipManager.getChip;
  */
 public class U15_InstPointer extends Chip {
 
+    // TODO: Reset vector here?
+
     public U15_InstPointer() {
         super("U15");
         putInput("ChipSelect", (byte) 1);
@@ -32,6 +34,6 @@ public class U15_InstPointer extends Chip {
             putOutput("IPLower", getChip("U115").getOutput("IPNewLower"));
             putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
         }
-        System.out.printf("%x\n", (int)getOutput("IPLower") << 4 | (int)getOutput("IPUpper"));
+        System.out.printf("%x\n", ((int)getOutput("IPLower") << 4 | (int)getOutput("IPUpper")));
     }
 }

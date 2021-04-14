@@ -45,6 +45,7 @@ public class U500_InstructionDecoderChip extends Chip {
         putOutput("INSTUpper", (byte) 0);
         putOutput("InstLen", (byte) 4);
         putOutput("Offset", (byte) 0);
+        putOutput("ALUAdderCarryIn", (byte) 0);
 
         // Control
         putOutput("ReadWrite", (byte) 0);

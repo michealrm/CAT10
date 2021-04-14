@@ -21,6 +21,6 @@ public class U101_AND extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("AND", (byte)(getChip("U112").getOutput("DATALower") & getChip("U113").getOutput("DATALower")));
+		putOutput("AND", (byte)(getChip("U112").getOutput("DATALower") & getChip("U113").getOutput("DATAUpper")));
 	}
 }
