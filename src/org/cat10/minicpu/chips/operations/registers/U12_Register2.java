@@ -50,5 +50,7 @@ public class U12_Register2 extends Chip {
 
             putOutput("Q", slaveNandOutput2a);
         }
+        System.out.println("Reg 2");
+        System.out.println(getOutput("Q"));
     }
 }

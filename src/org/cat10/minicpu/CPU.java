@@ -21,6 +21,7 @@ public class CPU {
      */
     static {
     	// INSTRUCTION CHIPS
+    	ChipManager.chipMap.put("U498", new U498_Select_Adder());
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
         ChipManager.chipMap.put("U105", new U105_Adder_IPInc());
         ChipManager.chipMap.put("U106", new U106_Adder_IPRel());
