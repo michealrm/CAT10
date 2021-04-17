@@ -58,22 +58,23 @@ public class U500_InstructionDecoderChip extends Chip {
             isNewInstruction = true;
             startOfExecution = false;
             putOutput("InstLen", (byte) 4); // So selMemMux is set to 0 to read all MEM registers
-            selMemMux = 0;
         }
 
         if(isNewInstruction) {
             readingMemory = true;
+            // selMemMux for later when readingMemory we want to start at 4-InstLen. Ex: InstLen=2, after shifting
+            // start reading at 4-2=2. You shifted 3 (MEM_4) and 2 into 0 and 1, so you need to start reading at 2.
             selMemMux = (byte) (4 - getOutput("InstLen"));
 
             // SHIFT memory registers by instruction length EX: Length=3, shift into XXXX -> X000 where X are the valid bits
             for(byte i = 0; (i + getOutput("InstLen")) != 4; i++) {
-                // Shifting using a 2 to 4 DEMUX, sel=InstLen
+                // Shifting using a 2 to 4 DEMUX, sel=i to be set the offset of InstLen
                 //
                 // For example InstLen = 2, i starts at 0
                 // switch i=0, select MEM_1, put MEM_3 into MEM_1
                 // switch i=1, select MEM_2, put MEM_4 into MEM_2
                 // Done!
-                switch(i) { // Shift i - InstLen
+                switch(i) { // Shift i <- i + InstLen
                     case 0:
                         putInput("MEM_1", mem_2to4_Demux(i + getOutput("InstLen")));
                         break;
@@ -88,12 +89,14 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
             }
 
-            getChip("U15").putInput("ChipSelect", (byte) 1);
-
             // Read instruction from memory
+            // Select IPInc for U115 4-1 MUX into IPnew that feeds into the IP register
             getChip("U115").putInput("sel", (byte) 2);
+            // Select 16 bit U15 IP register to output on MemAddr
             getChip("U116").putInput("sel", (byte) 0);
+            // Put read on control line to output enable T Gate in memory
             putOutput("ReadWrite", (byte) 0);
+            // Will be set to true again after a instruction ends
             isNewInstruction = false;
             return;
         }

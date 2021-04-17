@@ -21,14 +21,13 @@ public class CPU {
      */
     static {
     	// INSTRUCTION CHIPS
-    	ChipManager.chipMap.put("U498", new U498_Select_Adder());
         ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
+        ChipManager.chipMap.put("U15", new U15_InstPointer());
         ChipManager.chipMap.put("U105", new U105_Adder_IPInc());
         ChipManager.chipMap.put("U106", new U106_Adder_IPRel());
 
         ChipManager.chipMap.put("U115", new U115_4to1_Mux());
 
-        ChipManager.chipMap.put("U15", new U15_InstPointer());
 
         // Register mux put on data line before memory for things like mov [$ABCD], R1
         // We need the register mux's output to be put on the data line to pass into the U116 mux to address bus

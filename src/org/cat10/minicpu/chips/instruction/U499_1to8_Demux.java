@@ -7,7 +7,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
 /**
  * Inputs
  * getChip("U221").getOutput("MEM")
- * getInput("sel") 0-1
+ * getInput("sel") 0-2
  *
  * Outputs
  * getChip("U500").getInput("MEM_1")
@@ -15,8 +15,8 @@ import static org.cat10.minicpu.ChipManager.getChip;
  * getChip("U500").getInput("MEM_3")
  * getChip("U500").getInput("MEM_4")
  */
-public class U499_3to8_Demux extends Chip {
-    public U499_3to8_Demux() {
+public class U499_1to8_Demux extends Chip {
+    public U499_1to8_Demux() {
         super("U499");
         putInput("sel", (byte) 0);
     }
