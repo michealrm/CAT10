@@ -18,7 +18,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U105_Adder_IPInc extends Chip {
     public U105_Adder_IPInc() {
         super("U105");
-        putOutput("IPIncLower", (byte) 0);
+        putOutput("IPIncLower", (byte) 0xF0);
         putOutput("IPIncUpper", (byte) 0);
     }
 

@@ -49,6 +49,8 @@ public class U500_InstructionDecoderChip extends Chip {
 
         // Control
         putOutput("ReadWrite", (byte) 0);
+
+        putOutput("InstLen", (byte) 0);
     }
 
     @Override
@@ -61,7 +63,10 @@ public class U500_InstructionDecoderChip extends Chip {
         }
 
         if(isNewInstruction) {
+            // Next cycle we readMemory. This cycle we shift registers
             readingMemory = true;
+            // Will be set to true again after a instruction ends
+            isNewInstruction = false;
             // selMemMux for later when readingMemory we want to start at 4-InstLen. Ex: InstLen=2, after shifting
             // start reading at 4-2=2. You shifted 3 (MEM_4) and 2 into 0 and 1, so you need to start reading at 2.
             selMemMux = (byte) (4 - getOutput("InstLen"));
@@ -96,8 +101,8 @@ public class U500_InstructionDecoderChip extends Chip {
             getChip("U116").putInput("sel", (byte) 0);
             // Put read on control line to output enable T Gate in memory
             putOutput("ReadWrite", (byte) 0);
-            // Will be set to true again after a instruction ends
-            isNewInstruction = false;
+            // Set instruction len to 0, we'll set it to one once we're on the reading memory cycle
+            putOutput("InstLen", (byte) 0);
             return;
         }
 

@@ -18,8 +18,6 @@ import static org.cat10.minicpu.ChipManager.getChip;
  */
 public class U15_InstPointer extends Chip {
 
-    // TODO: Reset vector here?
-
     public U15_InstPointer() {
         super("U15");
         putInput("ChipSelect", (byte) 1);
@@ -30,10 +28,16 @@ public class U15_InstPointer extends Chip {
 
     @Override
     public void evaluateOut() {
-        if(getInput("ChipSelect") == (byte) 1) {
-            putOutput("IPLower", getChip("U115").getOutput("IPNewLower"));
-            putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
+        // ACTIVE LOW: If clock is low, update InstPointer
+        // Clock starts at low, but first updates to high before any chips, so the first
+        // execution the clock will be high. We don't want to update on the first cycle because
+        // U115 MUX for IPNew will be 0 because IPInc hasn't propagated
+        if(getChip("U999").getOutput("clock") == (byte)0) {
+            if (getInput("ChipSelect") == (byte) 1) {
+                putOutput("IPLower", getChip("U115").getOutput("IPNewLower"));
+                putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
+            }
+            System.out.printf("IP: %X %X\n", getOutput("IPLower"), getOutput("IPUpper"));
         }
-        System.out.printf("IP: %X\n", ((int)getOutput("IPLower") << 4 | (int)getOutput("IPUpper")));
     }
 }
