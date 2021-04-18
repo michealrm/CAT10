@@ -34,6 +34,6 @@ public class U15_InstPointer extends Chip {
             putOutput("IPLower", getChip("U115").getOutput("IPNewLower"));
             putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
         }
-        System.out.printf("%X\n", ((int)getOutput("IPLower") << 4 | (int)getOutput("IPUpper")));
+        System.out.printf("IP: %X\n", ((int)getOutput("IPLower") << 4 | (int)getOutput("IPUpper")));
     }
 }

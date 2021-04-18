@@ -40,7 +40,8 @@ public class U215_4KEPROM extends Chip {
             // We effectively mask 0x0FFF, where F would be a selected 4 bits, then we take the value at that
             // addr/index and put it on U220 writing MUX, which U221 T-Gate takes input from and puts out on
             // the MEM data bus
-            getChip("U220").putOutput("8BitDataBus", readonly.get((getInput("MemAddrLower") & 0xF) << 8 | getInput("MemAddrUpper")));
+            short index = (short) ((getChip("U116").getOutput("MemAddrLower") & 0xF) << 8 | getChip("U116").getOutput("MemAddrUpper"));
+            getChip("U220").putOutput("8BitDataBus", readonly.get(index));
         }
     }
 }

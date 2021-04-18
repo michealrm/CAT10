@@ -26,7 +26,7 @@ public class U115_4to1_Mux extends Chip {
         super("U115");
         putInput("sel", (byte) 0);
 
-        putOutput("IPNewLower", (byte) 0);
+        putOutput("IPNewLower", (byte) 0xF0);
         putOutput("IPNewUpper", (byte) 0);
     }
 

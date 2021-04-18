@@ -48,9 +48,9 @@ public class U255_4to16_Decoder extends Chip {
 
         // Select the index of the first 4 bits of the address
         byte lower = getChip("U116").getOutput("MemAddrLower");
-        int selectedMemChip = (lower & 0xF0) >> 4;
+        byte selectedMemChip = (byte) ((lower >> 4) & 0xF);
         // Select that chip. EX: Addr is 0xF000, we mask and chip to 0xF, and grab the 15th index which is the EPROM
-        memChips.get(selectedMemChip).putOutput("ChipSelect", (byte) 1);
+        memChips.get(selectedMemChip).putInput("ChipSelect", (byte) 1);
         // Now set other chips' ChipSelect to 0
         for(int i = 0; i < memChips.size(); i++) {
             Chip chip = memChips.get(i);
