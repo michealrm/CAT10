@@ -46,6 +46,11 @@ public class CPU {
         // Stack
         //ChipManager.chipMap.put("U117", new U117_2to1_Mux());
 
+        // (DE)MUXes to registers
+        ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());
+        ChipManager.chipMap.put("U118B", new U118B_8to1_Mux());
+        ChipManager.chipMap.put("U114", new U114_2to4_Demux());
+
         // Then, clock ticks
         ChipManager.chipMap.put("U999", new U999_Clock());
 

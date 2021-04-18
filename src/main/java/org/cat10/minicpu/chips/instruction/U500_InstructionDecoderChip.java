@@ -111,7 +111,7 @@ public class U500_InstructionDecoderChip extends Chip {
             switch (getInput("MEM_1")) {
                 case (byte) 0x80:
                     opCode = (byte) 0x80;
-                    putOutput("InstLen", (byte) 2); // May not stay, will be changed to 0 if we need more cycles
+                    putOutput("InstLen", (byte) 0); // Will be set to 2 after we process the instruction
 
                     // TODO: More instructions here
             }
@@ -136,10 +136,11 @@ public class U500_InstructionDecoderChip extends Chip {
             }
 
             // Increment sel to fill the next memory space
-            if(selMemMux != 4) {
+            if(selMemMux != 3) {
                 selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
                 putOutput("InstLen", (byte) 1);
             } else {
+                selMemMux = 4; // Set to unused value so it won't set any memory
                 // We've read MEM_1-4, now to read opcode
                 isOpcode = true;
                 readingMemory = false;
@@ -155,6 +156,9 @@ public class U500_InstructionDecoderChip extends Chip {
 
                     // Don't increment IP because we need another cycle to propagate the value into the register
                     putOutput("InstLen", (byte) 0);
+
+                    // Next cycle go to cycle 2 below
+                    onCycle2 = true;
                 } else {
                     getChip("U118A").putInput("sel", (byte) 0); // Select DATA
                     getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
@@ -163,6 +167,7 @@ public class U500_InstructionDecoderChip extends Chip {
                     onCycle2 = false;
                     putOutput("InstLen", (byte) 2); // Increment to the next instruction
                     isNewInstruction = true;
+                    opCode = 0;
                 }
             }
         }
