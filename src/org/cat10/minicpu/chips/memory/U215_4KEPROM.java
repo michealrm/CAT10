@@ -35,7 +35,7 @@ public class U215_4KEPROM extends Chip {
     @Override
     public void evaluateOut() {
         if(getInput("ChipSelect") != 0)
-            getChip("U220").putOutput("8BitDataBus", readonly.get((getInput("MemAddrLower") & 0xFF) << 4 | getInput("MemAddrUpper")));
+            getChip("U220").putOutput("8BitDataBus", readonly.get((getInput("MemAddrLower") & 0xF) << 8 | getInput("MemAddrUpper")));
     }
 }
 

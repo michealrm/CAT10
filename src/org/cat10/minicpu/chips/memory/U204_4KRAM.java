@@ -27,7 +27,7 @@ public class U204_4KRAM extends Chip {
     @Override
     public void evaluateOut() {
         if(getInput("ChipSelect") != 0)
-            getChip("U220").putOutput("8BitDataBus", memory[(getInput("MemAddrLower") & 0xFF) << 4 | getInput("MemAddrUpper")]);
+            getChip("U220").putOutput("8BitDataBus", memory[(getInput("MemAddrLower") & 0xF) << 2 | getInput("MemAddrUpper")]);
     }
 }
 

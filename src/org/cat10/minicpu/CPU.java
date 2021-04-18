@@ -47,6 +47,7 @@ public class CPU {
         // MEMORY CHIPS
         ChipManager.chipMap.put("U116", new U116_4to1_Mux());
 
+        ChipManager.chipMap.put("U255", new U255_4to16_Decoder());
         ChipManager.chipMap.put("U220", new U220_4to1_Mux());
 
         ChipManager.chipMap.put("U200", new U200_4KRAM());
