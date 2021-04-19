@@ -160,6 +160,7 @@ public class U500_InstructionDecoderChip extends Chip {
                         } else {
                             getChip("U118A").putInput("sel", (byte) 0); // Select DATA
                             getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
                             getChip("U114").putInput("OutputEnableB", (byte) 0);
 
                             onCycle2 = false;
