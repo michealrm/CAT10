@@ -16,7 +16,7 @@ public class CPU {
 
     public static boolean CPU_IS_ON = true;
     public static boolean DEBUG_REGS = true;
-    public static boolean DEBUG_MEMFETCH = false;
+    public static boolean DEBUG_MEMFETCH = true;
     public static boolean DEBUG_IP = true;
 
     /*
