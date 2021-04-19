@@ -46,6 +46,7 @@ public class U500_InstructionDecoderChip extends Chip {
         putOutput("INSTUpper", (byte) 0);
         putOutput("InstLen", (byte) 4);
         putOutput("Offset", (byte) 0);
+        putOutput("OffsetCarryIn", (byte) 0);
         putOutput("ALUAdderCarryIn", (byte) 0);
 
         // Control
@@ -103,22 +104,13 @@ public class U500_InstructionDecoderChip extends Chip {
                     getChip("U116").putInput("sel", (byte) 0);
                     // Put read on control line to output enable T Gate in memory
                     putOutput("ReadWrite", (byte) 0);
-                    // Set instruction len to 0, we'll set it to one once we're on the reading memory cycle
+                    // Set instruction len to 1 since we've set the flags for the first read, we're preparing for the
+                    // next read
                     putOutput("InstLen", (byte) 1);
                     return;
                 }
 
-                // Instruction decode
-                if (isOpcode) {
-                    switch (getInput("MEM_1")) {
-                        case (byte) 0x80:
-                            opCode = (byte) 0x80;
-                            putOutput("InstLen", (byte) 0); // Will be set to 2 after we process the instruction
 
-                            // TODO: More instructions here
-                    }
-                    isOpcode = false;
-                }
 
                 if (readingMemory) {
                     // 2 to 4 DEMUX that places memory each cycle
@@ -147,26 +139,49 @@ public class U500_InstructionDecoderChip extends Chip {
                         isOpcode = true;
                         readingMemory = false;
                     }
-                } else {
-                    if (opCode == (byte) 0x80) {
-                        if (!onCycle2) { // We're on cycle 1. We've read opcode and now we're on the registers byte
-                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
-                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                }
+                // If we're not reading memory we're either classifying opcode or processing instruction
+                else {
+                    // Instruction decode
+                    if (isOpcode) {
+                        switch (getInput("MEM_1")) {
+                            case (byte) 0x80:
+                                opCode = (byte) 0x80;
+                                putOutput("InstLen", (byte) 0); // Will be set to 2 after we process the instruction
 
-                            // Select register operand 2 to be selected in U112 MUX to DATALower bus
-                            getChip("U112").putInput("sel", regOperand2);
+                                // Use IPRel to move back IP using 1 as carry in for subtraction
+                                putOutput("Offset", (byte) 2);
+                                putOutput("OffsetCarryIn", (byte) 1);
+                                getChip("U115").putInput("sel", (byte) 3);
+                        }
+                        isOpcode = false;
+                    } else {
+                        // We'll set InstLen to 0 while processing the instruction
+                        putOutput("InstLen", (byte) 0);
+                        // Set IPInc to be used for IP, since isOpcode will change to IPRel to set back from mem fetch
+                        if (opCode == (byte) 0x80) {
+                            if (!onCycle2) { // We're on cycle 1. We've read opcode and now we're on the registers byte
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
 
-                            // Next cycle go to cycle 2 below
-                            onCycle2 = true;
-                        } else {
-                            getChip("U118A").putInput("sel", (byte) 0); // Select DATA
-                            getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
-                            getChip("U114").putInput("OutputEnableA", (byte) 1);
-                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                                // Select register operand 2 to be selected in U112 MUX to DATALower bus
+                                getChip("U112").putInput("sel", regOperand2);
 
-                            onCycle2 = false;
-                            isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
-                            opCode = 0;
+                                // Next cycle go to cycle 2 below
+                                onCycle2 = true;
+                            } else {
+                                getChip("U118A").putInput("sel", (byte) 0); // Select DATA
+                                getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                                getChip("U114").putInput("OutputEnableA", (byte) 1);
+                                getChip("U114").putInput("OutputEnableB", (byte) 0);
+
+                                onCycle2 = false;
+                                isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                                opCode = 0;
+
+                                // We want to shift out 2 memory places and read in 2
+                                putOutput("InstLen", (byte) 2);
+                            }
                         }
                     }
                 }

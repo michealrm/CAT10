@@ -7,7 +7,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
 
 /**
  * Input
- * getChip("U105").getOutput("IPIncUpper")
+ * getChip("U105").getOutput("IPIncLower")
  * getChip("U105").getOutput("IPIncUpper")
  * getChip("U500").getOutput("Offset")
  *
@@ -22,8 +22,8 @@ public class U106_Adder_IPRel extends Chip {
 
     @Override
     public void evaluateOut() {
-        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncLower"), getChip("U500").getOutput("Offset"));
-        CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncUpper"), upperByteOutput.carryOut);
+        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte(getChip("U500").getOutput("OffsetCarryIn"), getChip("U105").getOutput("IPIncUpper"), getChip("U500").getOutput("Offset"));
+        CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncLower"), upperByteOutput.carryOut);
         putOutput("IPRelLower", lowerByteOutput.sum);
         putOutput("IPRelUpper", upperByteOutput.sum);
     }
