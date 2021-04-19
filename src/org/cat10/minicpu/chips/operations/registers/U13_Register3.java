@@ -50,6 +50,8 @@ public class U13_Register3 extends Chip {
 
             putOutput("Q", slaveNandOutput2a);
         }
+        System.out.println("Reg 3");
+        System.out.println(getOutput("Q"));
     }
 
 }

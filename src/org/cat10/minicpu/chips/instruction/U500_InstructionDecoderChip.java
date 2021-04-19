@@ -103,7 +103,7 @@ public class U500_InstructionDecoderChip extends Chip {
                     // Put read on control line to output enable T Gate in memory
                     putOutput("ReadWrite", (byte) 0);
                     // Set instruction len to 0, we'll set it to one once we're on the reading memory cycle
-                    putOutput("InstLen", (byte) 0);
+                    putOutput("InstLen", (byte) 1);
                     return;
                 }
 
