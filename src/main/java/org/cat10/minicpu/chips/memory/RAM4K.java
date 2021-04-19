@@ -32,7 +32,7 @@ public class RAM4K extends Chip {
                 // We effectively mask 0x0FFF, where F would be a selected 4 bits, then we take the value at that
                 // addr/index and put it on U220 writing MUX, which U221 T-Gate takes input from and puts out on
                 // the MEM data bus
-                getChip("U220").putOutput("8BitDataBus", memory[(getInput("MemAddrLower") & 0xF) << 8 | getInput("MemAddrUpper")]);
+                getChip("U220").putOutput("8BitDataBus", memory[((getChip("U116").getOutput("MemAddrLower") & 0xF) << 8 | getChip("U116").getOutput("MemAddrUpper")) & 0xFFF]);
             } else { // Write
                 // Mask 0xFFF, where F is a selected 4 bits, then write the output of U220 MUX wihch takes in DATALower,
                 // DATAUpper, ALU, and INST, and write that into the calculated/masked address

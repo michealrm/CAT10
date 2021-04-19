@@ -103,6 +103,9 @@ public class CPU {
     public static void run() {
         while(CPU_IS_ON) {
             ChipManager.updateChips();
+            try {
+                Thread.sleep(100);
+            } catch(Exception e) {}
         }
     }
 
