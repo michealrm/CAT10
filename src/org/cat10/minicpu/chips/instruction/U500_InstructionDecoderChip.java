@@ -1,5 +1,6 @@
 package org.cat10.minicpu.chips.instruction;
 
+import org.cat10.minicpu.CPU;
 import org.cat10.minicpu.chips.Chip;
 import org.cat10.minicpu.util.CAT10Util;
 
@@ -171,7 +172,8 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
             }
         } finally {
-            System.out.printf("MEMORY: (MEM_1=x%02X), (MEM_2=x%02X), (MEM_3=x%02X), (MEM_4=x%02X)\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4"));
+            if(CPU.DEBUG_MEMFETCH)
+                System.out.printf("MEMORY: (MEM_1=x%02X), (MEM_2=x%02X), (MEM_3=x%02X), (MEM_4=x%02X)\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4"));
         }
     }
 
