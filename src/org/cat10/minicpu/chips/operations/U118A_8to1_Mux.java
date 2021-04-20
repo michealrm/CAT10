@@ -30,6 +30,10 @@ public class U118A_8to1_Mux extends Chip {
         switch(getInput("sel")) {
             case 0:
                 putOutput("A", getChip("U112").getOutput("DATALower"));
+                if(getOutput("A") != 0)
+                	System.out.println("Not zero, yo!");
+                if(getOutput("A") == 0)
+                	System.out.println("ya wey zero!");
                 break;
             case 1:
                 putOutput("A", getChip("U14").getOutput("SPLower"));
