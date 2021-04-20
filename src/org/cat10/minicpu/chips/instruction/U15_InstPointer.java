@@ -1,5 +1,6 @@
 package org.cat10.minicpu.chips.instruction;
 
+import org.cat10.minicpu.CPU;
 import org.cat10.minicpu.chips.Chip;
 
 import static org.cat10.minicpu.ChipManager.getChip;
@@ -37,7 +38,8 @@ public class U15_InstPointer extends Chip {
                 putOutput("IPLower", getChip("U115").getOutput("IPNewLower"));
                 putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
             }
-            System.out.printf("IP: %X %X\n", getOutput("IPLower"), getOutput("IPUpper"));
+            if(CPU.DEBUG_IP)
+                System.out.printf("Clock is low, IP is: x%02X%02X\n", getOutput("IPLower"), getOutput("IPUpper"));
         }
     }
 }
