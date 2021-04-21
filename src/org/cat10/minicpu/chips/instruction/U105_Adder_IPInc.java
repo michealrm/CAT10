@@ -18,13 +18,13 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U105_Adder_IPInc extends Chip {
     public U105_Adder_IPInc() {
         super("U105");
-        putOutput("IPIncLower", (byte) 0xF0);
+        putOutput("IPIncLower", (byte) 0);
         putOutput("IPIncUpper", (byte) 0);
     }
 
     @Override
     public void evaluateOut() {
-        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPUpper"), (byte)1);
+        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPUpper"), getChip("U500").getOutput("InstLen"));
         CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPLower"), upperByteOutput.carryOut);
         putOutput("IPIncLower", lowerByteOutput.sum);
         putOutput("IPIncUpper", upperByteOutput.sum);

@@ -1,3 +1,9 @@
 mov r2, $aa
-mov r3, r2
-mov r0, r3
+mov r0, r2
+mov r3, r0
+mov r1, r3
+
+mov r2, $bb
+mov r0, r2
+mov r3, r0
+mov r1, r3

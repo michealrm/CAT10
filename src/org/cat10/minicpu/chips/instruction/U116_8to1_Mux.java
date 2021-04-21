@@ -14,15 +14,17 @@ import static org.cat10.minicpu.ChipManager.getChip;
  * 2 getChip("U500").getOutput("INSTUpper")
  * 3 getChip("U112").getOutput("DATALower")
  * 3 getChip("U113").getOutput("DATAUpper")
+ * 4 getChip("U500").getOutput("MemFetchLower")
+ * 4 getChip("U500").getOutput("MemFetchUpper")
  * getInput("sel") 0-1
  *
  * Outputs
  * getOutput("MemAddrLower")
  * getOutput("MemAddrUpper")
  */
-public class U116_4to1_Mux extends Chip {
+public class U116_8to1_Mux extends Chip {
 
-    public U116_4to1_Mux() {
+    public U116_8to1_Mux() {
         super("U116");
         putInput("sel", (byte) 0);
         putOutput("MemAddr", (byte) 0);
@@ -46,6 +48,10 @@ public class U116_4to1_Mux extends Chip {
             case 3:
                 putOutput("MemAddrLower", getChip("U112").getOutput("DATALower"));
                 putOutput("MemAddrUpper", getChip("U113").getOutput("DATAUpper"));
+                break;
+            case 4:
+                putOutput("MemAddrLower", getChip("U500").getOutput("MemFetchLower"));
+                putOutput("MemAddrUpper", getChip("U500").getOutput("MemFetchUpper"));
                 break;
         }
     }

@@ -3,6 +3,7 @@ package org.cat10.minicpu;
 import org.cat10.minicpu.chips.Chip;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * ChipManager handles execution of clocked and combinational chips. For the order of execution, you should place
@@ -18,7 +19,7 @@ public class ChipManager {
     /**
      * Order matters. If you want sequential inputs, place the Chips in order of when they're used.
      */
-    public static HashMap<String, Chip> chipMap = new HashMap<>();
+    public static LinkedHashMap<String, Chip> chipMap = new LinkedHashMap<>();
 
 
     public static Chip getChip(String chipID) {

@@ -18,6 +18,7 @@ public class CPU {
     public static boolean DEBUG_REGS = true;
     public static boolean DEBUG_MEMFETCH = true;
     public static boolean DEBUG_IP = true;
+    public static boolean DEBUG_EXECUTION_DELAY = true;
 
     /*
      * Set chips
@@ -58,13 +59,13 @@ public class CPU {
         ChipManager.chipMap.put("U999", new U999_Clock());
 
         // INSTRUCTION CHIPS
-        ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
         ChipManager.chipMap.put("U15", new U15_InstPointer());
+        ChipManager.chipMap.put("U500", new U500_InstructionDecoderChip());
         ChipManager.chipMap.put("U105", new U105_Adder_IPInc());
         ChipManager.chipMap.put("U106", new U106_Adder_IPRel());
-
         // MUX to set IPNew output for new instr pointer
         ChipManager.chipMap.put("U115", new U115_4to1_Mux());
+
 
 
         // REGISTER CHIPS
@@ -75,7 +76,7 @@ public class CPU {
 
         // MEMORY CHIPS
         // Instruction/data to memory address MUX
-        ChipManager.chipMap.put("U116", new U116_4to1_Mux());
+        ChipManager.chipMap.put("U116", new U116_8to1_Mux());
 
         // Address to chip select
         ChipManager.chipMap.put("U255", new U255_4to16_Decoder());
@@ -106,9 +107,11 @@ public class CPU {
     public static void run() {
         while(CPU_IS_ON) {
             ChipManager.updateChips();
-            try {
-                Thread.sleep(100);
-            } catch(Exception e) {}
+            if(DEBUG_EXECUTION_DELAY) {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {}
+            }
         }
     }
 
