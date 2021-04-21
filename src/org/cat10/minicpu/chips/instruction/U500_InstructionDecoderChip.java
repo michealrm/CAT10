@@ -66,6 +66,9 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
 
                 if (isNewInstruction) {
+                    // Default update the IP while reading instruction
+                    getChip("U15").putInput("ChipSelect", (byte) 1);
+
                     // Next cycle we readMemory. This cycle we shift registers
                     readingMemory = true;
                     // Will be set to true again after a instruction ends
@@ -104,9 +107,6 @@ public class U500_InstructionDecoderChip extends Chip {
                     getChip("U116").putInput("sel", (byte) 0);
                     // Put read on control line to output enable T Gate in memory
                     putOutput("ReadWrite", (byte) 0);
-                    // Set instruction len to 1 since we've set the flags for the first read, we're preparing for the
-                    // next read
-                    putOutput("InstLen", (byte) 1);
                     return;
                 }
 
@@ -132,29 +132,40 @@ public class U500_InstructionDecoderChip extends Chip {
                     // Increment sel to fill the next memory space
                     if (selMemMux != 3) {
                         selMemMux = CAT10Util.fullAdderByte((byte) 0, selMemMux, (byte) 1).sum;
-                        putOutput("InstLen", (byte) 1);
                     } else {
                         selMemMux = 4; // Set to unused value so it won't set any memory
                         // We've read MEM_1-4, now to read opcode
                         isOpcode = true;
                         readingMemory = false;
-                        // We don't want to start classifying opcode because we need a cycle to increment IP
+
+                        getChip("U115").putInput("sel", (byte) 3); // Select IPRel for IPNew
+                        putOutput("OffsetCarryIn", (byte) 1); // For subtraction
+                        // Setting opcode and offsetting by 4 - InstLen to place IP on instruction after current one
+                        switch(getInput("MEM_1")) {
+                            case (byte)0x80:
+                                putOutput("Offset", (byte)2);
+                                putOutput("InstLen", (byte) 2);
+                                break;
+                            case (byte)0x81:
+                                putOutput("Offset", (byte)1);
+                                putOutput("InstLen", (byte) 3);
+                        }
+                        // InstLen set so after instruction completes isNewInstruction will shift out the instruction
                     }
                 }
                 // If we're not reading memory we're either classifying opcode or processing instruction
                 else {
-                    // We'll set InstLen to 0 while processing the instruction
-                    putOutput("InstLen", (byte) 0);
+                    // Default update DO NOT update IP while processing instruction
+                    getChip("U15").putInput("ChipSelect", (byte) 0);
+                    getChip("U115").putInput("sel", (byte) 3); // Select IPInc for IPNew
 
                     // Instruction decode, moving back IP from reads, and first cycle of instruction
                     if (isOpcode) {
+                        // Setup and first cycle of instructions
                         switch (getInput("MEM_1")) {
                             case (byte) 0x80:
                                 opCode = (byte) 0x80;
 
-                                // Use IPRel to move back IP using 1 as carry in for subtraction
-                                putOutput("Offset", (byte) 2);
-                                putOutput("OffsetCarryIn", (byte) 1);
                                 getChip("U115").putInput("sel", (byte) 3);
 
                                 // First cycle
@@ -163,15 +174,11 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 // Select register operand 2 to be selected in U112 MUX to DATALower bus
                                 getChip("U112").putInput("sel", regOperand2);
-
                                 // Next cycle goes to cycle 2 below
 
                             case (byte) 0x81:
                                 opCode = (byte) 0x81;
 
-                                // Use IPRel to move back IP using 1 as carry in for subtraction
-                                putOutput("Offset", (byte) 3);
-                                putOutput("OffsetCarryIn", (byte) 1);
                                 getChip("U118A").putInput("sel", (byte) 2);
 
                                 // First cycle
@@ -186,14 +193,12 @@ public class U500_InstructionDecoderChip extends Chip {
                                 getChip("U114").putInput("OutputEnableB", (byte) 0);
                                 isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
                                 opCode = 0;
-                                // We want to shift out 3 memory places and read in 3
-                                putOutput("InstLen", (byte) 3);
+
                                 // Next cycle goes to cycle 2 below
                         }
                         isOpcode = false;
                     } else {
-                        // Select IPInc again. It was set to IPRel so we move back the IP from the memory fetches
-                        getChip("U115").putInput("sel", (byte) 2);
+                        // Second and further cycles
 
                         // Second cycle of 0x80 MOV R8,R8
                         if (opCode == (byte) 0x80) {
@@ -205,9 +210,6 @@ public class U500_InstructionDecoderChip extends Chip {
                             onCycle2 = false;
                             isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
                             opCode = 0;
-
-                            // We want to shift out 2 memory places and read in 2
-                            putOutput("InstLen", (byte) 2);
                         }
                     }
                 }

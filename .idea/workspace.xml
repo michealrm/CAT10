@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/InputFiles/TestTest" beforeDir="false" afterPath="$PROJECT_DIR$/InputFiles/TestTest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U105_Adder_IPInc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U105_Adder_IPInc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/registers/U12_Register2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/registers/U12_Register2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,11 +82,26 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
+          <line>61</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U106_Adder_IPRel.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
         <watch expression="((U114_2to4_Demux)this).inputs" custom="org.cat10.minicpu.chips.operations.U114_2to4_Demux" />
         <watch expression="((U114_2to4_Demux)this).inputs" language="JAVA" custom="org.cat10.minicpu.chips.operations.U114_2to4_Demux" />
         <watch expression="getChip(&quot;U15&quot;)" language="JAVA" />
+        <watch expression="a" />
       </configuration>
     </watches-manager>
   </component>

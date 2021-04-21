@@ -24,7 +24,7 @@ public class U105_Adder_IPInc extends Chip {
 
     @Override
     public void evaluateOut() {
-        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPUpper"), getChip("U500").getOutput("InstLen"));
+        CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPUpper"), (byte)1);
         CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U15").getOutput("IPLower"), upperByteOutput.carryOut);
         putOutput("IPIncLower", lowerByteOutput.sum);
         putOutput("IPIncUpper", upperByteOutput.sum);
