@@ -7,20 +7,10 @@ import org.cat10.minicpu.util.CAT10Util;
 import static org.cat10.minicpu.ChipManager.getChip;
 
 /**
- * Inputs:
- * getInput("MEM_1")
- * getInput("MEM_2")
- * getInput("MEM_3")
- * getInput("MEM_4")
- * getChip("U110").getOutput("FLAGS")
+ * The instruction decoder chip reads from memory, manages instruction cycles, and sets control lines to
+ * propagate data from instructions.
  *
- * Outputs
- * getChip("U105").getInput("InstrLen")
- * getChip("U106").getInput("Offset")
- * getOutput("INSTLower")
- * getOutput("INSTUpper")
- *
- * Outputs (Control)
+ * Refer to the constructor for inputs and outputs
  */
 public class U500_InstructionDecoderChip extends Chip {
 
@@ -31,11 +21,9 @@ public class U500_InstructionDecoderChip extends Chip {
     boolean isOpcode = false; // MEM_1 contains opcode that has already been read from memory using isNewInstruction
                               // in the previous cycle
     byte opCode = 0;
-    boolean onCycle2 = false;
 
     byte regOperand1;
     byte regOperand2;
-    short nextInstruction = (short)0xF000;
 
     public U500_InstructionDecoderChip() {
         super("U500");
@@ -111,7 +99,7 @@ public class U500_InstructionDecoderChip extends Chip {
                     }
 
                     // Read instruction from memory
-                    // Select 16 bit mem fetch to output on MemAddr
+                    // Select 16 bit MEM FETCH register to output on MemAddr
                     getChip("U116").putInput("sel", (byte) 4);
                     // Put read on control line to output enable T Gate in memory
                     putOutput("ReadWrite", (byte) 0);
@@ -122,9 +110,10 @@ public class U500_InstructionDecoderChip extends Chip {
 
                 if (readingMemory) {
                     // We're using MemFetch register into U116 MUX instead of incrementing IP
-                    // IP CS is already disabled from isNewInstruction
+                    // IP ChipSelect is already disabled from isNewInstruction
 
-                    // 2 to 4 DEMUX that places memory each cycle
+                    // 2 to 4 DEMUX that places next valid memory each cycle, which has been put on the data line
+                    // using the internal MemFetch register in the getOutput of this chip
                     switch (selMemMux) {
                         case 0:
                             putInput("MEM_1", getChip("U221").getOutput("MEM"));
@@ -139,7 +128,8 @@ public class U500_InstructionDecoderChip extends Chip {
                             putInput("MEM_4", getChip("U221").getOutput("MEM"));
                             break;
                     }
-                    
+
+                    // Increment next valid instruction since we just set memory from MEM bus
                     CAT10Util.AdderOutput memFetchAddUpper = CAT10Util.fullAdderByte((byte) 0, getOutput("MemFetchUpper"), (byte)1);
                     putOutput("MemFetchUpper", memFetchAddUpper.sum);
                     putOutput("MemFetchLower", (byte)(getOutput("MemFetchLower") + memFetchAddUpper.carryOut));
@@ -148,7 +138,9 @@ public class U500_InstructionDecoderChip extends Chip {
                     if (selMemMux != 3) {
                         selMemMux += 1;
                     } else { // selMemMux = 4
+                        // ChipSelect IP to increment using InstLen to move IP to next instruction
                         getChip("U15").putInput("ChipSelect", (byte) 1);
+
                         selMemMux = 4; // Set to unused value so it won't set any memory
                         isOpcode = true;
                         readingMemory = false;
@@ -189,7 +181,7 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 // Select register operand 2 to be selected in U112 MUX to DATALower bus
                                 getChip("U112").putInput("sel", regOperand2);
-                                // Next cycle goes to cycle 2 below
+                                // Next cycle goes to cycle 2 later in the else block
                                 break;
 
                             case (byte) 0x81:

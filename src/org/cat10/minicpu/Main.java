@@ -9,8 +9,6 @@ public class Main {
     public static byte[] code;
 
     public static void main(String[] args) {
-        System.out.println(CAT10Util.Not((byte)1));
-        System.out.println(CAT10Util.Not((byte)0));
         code = new byte[0x1000]; // 4K
         Scanner scan = new Scanner(args[0]);
 
