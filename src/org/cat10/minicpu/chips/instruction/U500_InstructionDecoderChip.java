@@ -165,6 +165,30 @@ public class U500_InstructionDecoderChip extends Chip {
                                 getChip("U112").putInput("sel", regOperand2);
 
                                 // Next cycle goes to cycle 2 below
+
+                            case (byte) 0x81:
+                                opCode = (byte) 0x81;
+
+                                // Use IPRel to move back IP using 1 as carry in for subtraction
+                                putOutput("Offset", (byte) 3);
+                                putOutput("OffsetCarryIn", (byte) 1);
+                                getChip("U118A").putInput("sel", (byte) 2);
+
+                                // First cycle
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                //regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                                byte intConstant = getInput("MEM_3");
+
+                                // Select register operand 2 to be selected in U112 MUX to DATALower bus
+                                putOutput("INSTLower", intConstant);
+                                getChip("U114").putInput("SelA", regOperand1);
+                                getChip("U114").putInput("OutputEnableA", (byte) 1);
+                                getChip("U114").putInput("OutputEnableB", (byte) 0);
+                                isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                                opCode = 0;
+                                // We want to shift out 3 memory places and read in 3
+                                putOutput("InstLen", (byte) 3);
+                                // Next cycle goes to cycle 2 below
                         }
                         isOpcode = false;
                     } else {
