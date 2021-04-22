@@ -57,12 +57,12 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
 
                 // Prepares for memory read by CS=0 for IP since IP is already on next instruction, setting selMemMux
-                // to 4 - InstLen (selMemMux is used for a mux that takes in data from MEM bus, and selects between
-                // the 4 MEM registers in decode. So it's 4 - InstLen because after we shift, for example a 2 byte
-                // instruction, we would move MEM_3 and 4 into 1 and 2, so we need to start filling memory starting
-                // at index 2 = MEM_3 = 4 - InstLen
+                // (selMemMux is used for a mux that takes in data from MEM bus, and selects between the 4 MEM registers
+                // in decode) to 4 - InstLen because after we shift, for example a 2 byte instruction, we would move
+                // MEM_3 and 4 into 1 and 2, so we need to start filling memory starting at index 2 = MEM_3 = 4 - InstLen
+                //
                 // When isNewInstruction is enabled, we expect that InstLen is set to the instruction length of the
-                // last instruction executed. That's all.
+                // last instruction executed and MEM_1 contains the beginning of the last instruction executed.
                 if (isNewInstruction) {
                     // Don't update IP for new instruction because we're already on the next instruction to read
                     getChip("U15").putInput("ChipSelect", (byte) 0);
@@ -109,7 +109,8 @@ public class U500_InstructionDecoderChip extends Chip {
 
 
                 if (readingMemory) {
-                    // We're using MemFetch register into U116 MUX instead of incrementing IP
+                    // We're using MemFetch register into U116 MUX instead of incrementing IP so we don't have to
+                    // backtrack after reading into MEM fetch registers
                     // IP ChipSelect is already disabled from isNewInstruction
 
                     // 2 to 4 DEMUX that places next valid memory each cycle, which has been put on the data line
@@ -137,11 +138,11 @@ public class U500_InstructionDecoderChip extends Chip {
                     // Increment sel to fill the next memory space
                     if (selMemMux != 3) {
                         selMemMux += 1;
-                    } else { // selMemMux = 4
+                    } else { // selMemMux made the last read into MEM_3
                         // ChipSelect IP to increment using InstLen to move IP to next instruction
                         getChip("U15").putInput("ChipSelect", (byte) 1);
 
-                        selMemMux = 4; // Set to unused value so it won't set any memory
+                        selMemMux = 4; // Set to unused value
                         isOpcode = true;
                         readingMemory = false;
 
@@ -149,15 +150,15 @@ public class U500_InstructionDecoderChip extends Chip {
                         switch(getInput("MEM_1")) {
                             case (byte)0x80:
                                 opCode = (byte)0x80;
-                                putOutput("InstLen", (byte) 2);
+                                putOutput("InstLen", (byte) 2); // To increment IP to next instruction
                                 break;
                             case (byte)0x81:
                                 opCode = (byte)0x81;
-                                putOutput("InstLen", (byte) 3);
+                                putOutput("InstLen", (byte) 3); // To increment IP to next instruction
                                 break;
                             default:
                                 opCode = (byte)0;
-                                putOutput("InstLen", (byte)1);
+                                putOutput("InstLen", (byte)1); // To increment IP to next instruction
 
                                 isNewInstruction = true;
                         }
@@ -165,7 +166,7 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
                 // If we're not reading memory we're either classifying opcode or processing instruction
                 else {
-                    // Default update DO NOT update IP while processing instruction
+                    // Do not update IP while processing instruction. IP should stay on next instruction
                     getChip("U15").putInput("ChipSelect", (byte) 0);
 
                     // Instruction decode, moving back IP from reads, and first cycle of instruction
@@ -204,7 +205,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 break;
                             default:
                                 isNewInstruction = true;
-                                putOutput("InstLen", (byte)1);
+                                putOutput("InstLen", (byte)1); // Skip the no-op
                         }
                         isOpcode = false;
                     } else {
