@@ -1,4 +1,3 @@
-mov r01, r23
 mov r2, $aa
 mov r0, r2
 mov r3, r0
