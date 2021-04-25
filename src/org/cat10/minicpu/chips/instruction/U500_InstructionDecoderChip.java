@@ -169,7 +169,7 @@ public class U500_InstructionDecoderChip extends Chip {
                     // Do not update IP while processing instruction. IP should stay on next instruction
                     getChip("U15").putInput("ChipSelect", (byte) 0);
 
-                    // Instruction decode, moving back IP from reads, and first cycle of instruction
+                    // First cycle of instruction. Second and later cycles are in the else block.
                     if (isOpcode) {
                         // Setup and first cycle of instructions
                         switch (opCode) {
@@ -230,7 +230,7 @@ public class U500_InstructionDecoderChip extends Chip {
                 }
             }
         } finally {
-            if(CPU.DEBUG_MEMFETCH)
+            if(CPU.DEBUG_MEMFETCH);
                 System.out.printf("MEMORY: (MEM_1=x%02X), (MEM_2=x%02X), (MEM_3=x%02X), (MEM_4=x%02X)\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4"));
         }
     }
