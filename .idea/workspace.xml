@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Scanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Scanner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/memory/RAM4K.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/memory/RAM4K.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,11 +39,16 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Miche\Source\CAT10\InputFiles" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.cat10.minicpu.Main" />
       <module name="CAT10-1" />
-      <option name="PROGRAM_PARAMETERS" value="InputFiles/M1Test" />
+      <option name="PROGRAM_PARAMETERS" value="InputFiles/FinalTest" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.cat10.minicpu.*" />
@@ -80,6 +89,15 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/Main.java</url>
+          <line>27</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
         <watch expression="((U114_2to4_Demux)this).inputs" custom="org.cat10.minicpu.chips.operations.U114_2to4_Demux" />

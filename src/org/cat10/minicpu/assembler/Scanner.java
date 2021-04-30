@@ -260,11 +260,11 @@ public class Scanner {
 
     private boolean isSeparator(Token token) {
         char c = token.tokenSB.charAt(0);
-        return c == ',' || c == '[' || c == ']';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=';
     }
 
     private boolean isSeparator(char c) {
-        return c == ',' || c == '[' || c == ']';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=';
     }
 
     private boolean isIntConst(Token token) {

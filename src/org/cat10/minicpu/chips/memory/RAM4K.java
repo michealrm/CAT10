@@ -18,9 +18,9 @@ public class RAM4K extends Chip {
 
     public byte[] memory;
 
-    public RAM4K(String chipID) {
+    public RAM4K(String chipID, byte[] memory) {
         super(chipID); // Generic chipID because we create 13 4K RAM memory chips
-        memory = new byte[0x1000]; // Allocate 4K
+        this.memory = memory;
 
         putInput("ChipSelect", (byte) 0);
     }

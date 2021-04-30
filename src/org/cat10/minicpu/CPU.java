@@ -84,21 +84,21 @@ public class CPU {
         // MUX for writing byte from DATA, ALU, or INST to memory
         ChipManager.chipMap.put("U220", new U220_4to1_Mux());
 
-        ChipManager.chipMap.put("U200", new RAM4K("U200"));
-        ChipManager.chipMap.put("U201", new RAM4K("U201"));
-        ChipManager.chipMap.put("U202", new RAM4K("U202"));
-        ChipManager.chipMap.put("U203", new RAM4K("U203"));
-        ChipManager.chipMap.put("U204", new RAM4K("U204"));
-        ChipManager.chipMap.put("U205", new RAM4K("U205"));
-        ChipManager.chipMap.put("U206", new RAM4K("U206"));
-        ChipManager.chipMap.put("U207", new RAM4K("U207"));
-        ChipManager.chipMap.put("U208", new RAM4K("U208"));
-        ChipManager.chipMap.put("U209", new RAM4K("U209"));
-        ChipManager.chipMap.put("U210", new RAM4K("U210"));
-        ChipManager.chipMap.put("U211", new RAM4K("U211"));
-        ChipManager.chipMap.put("U212", new RAM4K("U212"));
-        ChipManager.chipMap.put("U213", new RAM4K("U213"));
-        ChipManager.chipMap.put("U215", new U215_4KEPROM(Main.code));
+        ChipManager.chipMap.put("U200", new RAM4K("U200", Main.parser.mems[0]));
+        ChipManager.chipMap.put("U201", new RAM4K("U201", Main.parser.mems[1]));
+        ChipManager.chipMap.put("U202", new RAM4K("U202", Main.parser.mems[2]));
+        ChipManager.chipMap.put("U203", new RAM4K("U203", Main.parser.mems[3]));
+        ChipManager.chipMap.put("U204", new RAM4K("U204", Main.parser.mems[4]));
+        ChipManager.chipMap.put("U205", new RAM4K("U205", Main.parser.mems[5]));
+        ChipManager.chipMap.put("U206", new RAM4K("U206", Main.parser.mems[6]));
+        ChipManager.chipMap.put("U207", new RAM4K("U207", Main.parser.mems[7]));
+        ChipManager.chipMap.put("U208", new RAM4K("U208", Main.parser.mems[8]));
+        ChipManager.chipMap.put("U209", new RAM4K("U209", Main.parser.mems[9]));
+        ChipManager.chipMap.put("U210", new RAM4K("U210", Main.parser.mems[10]));
+        ChipManager.chipMap.put("U211", new RAM4K("U211", Main.parser.mems[11]));
+        ChipManager.chipMap.put("U212", new RAM4K("U212", Main.parser.mems[12]));
+        ChipManager.chipMap.put("U213", new RAM4K("U213", Main.parser.mems[13]));
+        ChipManager.chipMap.put("U215", new U215_4KEPROM(Main.parser.mems[15]));
 
         // T-Gate
         ChipManager.chipMap.put("U221", new U221_TGate());

@@ -1,0 +1,7 @@
+*=$0000
+mov r1, r0
+mov r1, $44
+mov r0, r1
+*=$F000
+mov r0, $aa
+mov r1, r0

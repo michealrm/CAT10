@@ -34,7 +34,8 @@ public class Parser {
     }
 
     private final Scanner scan;
-    private final byte[] sourceByteCode;  // Will place into RAM
+    public byte[][] mems;          // Array of 4K memory up to 15 chips, where index 14 is IO and null
+    private int memSel;             // Selection of memory chip. 14 is IO which is null, so we'll wrap over to 15
     private int bcIndex;            // Index in sourceByteCode. Placed on a valid byte to write
 
     // *** Bytes defined in order of: R8:R8, R8:$HH, R8:[MEM], [MEM]:R8 ***
@@ -48,9 +49,15 @@ public class Parser {
     private static final byte[] pushOpcodes = {(byte)0x90};
     private static final byte[] popOpcodes = {(byte)0xA0};
 
-    public Parser(Scanner scan, byte[] codeMemory) {
+    public Parser(Scanner scan) {
         this.scan = scan;
-        this.sourceByteCode = codeMemory;
+        mems = new byte[16][];
+        for(int i = 0; i < 16; i++) {
+            if(i == 14)
+                continue;
+            else
+                mems[i] = new byte[0x1000]; // 4K
+        }
     }
 
     /**
@@ -64,7 +71,7 @@ public class Parser {
             if(scan.currentToken.classif == Classif.EOF)
                 break;
 
-            if(scan.currentToken.classif != Classif.MNEMONIC)
+            if(scan.currentToken.classif != Classif.MNEMONIC && !scan.currentToken.tokenStr.equals("*"))
                 errorWithCurrent("Expected a mnemonic for the start of a statement");
 
             switch(scan.currentToken.tokenStr) {
@@ -92,6 +99,16 @@ public class Parser {
                 case "POP":
                     STACKInstructions();
                     break;
+
+                case "*":
+                    // *=$MMMM
+                    if(!scan.getNext().tokenStr.equals("="))
+                        errorWithCurrent("Expected = for *=$MMMM");
+                    if(scan.getNext().classif != Classif.INTCONST)
+                        errorWithCurrent("Expected INTCONST for *=$MMMM");
+                    int loc = Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16);
+                    memSel = (loc & 0xF000) >> 12;
+                    bcIndex = loc & 0x0FFF;
             }
         }
     }
@@ -437,8 +454,18 @@ public class Parser {
     // Util
 
     private void writeBytes(byte... byteArr) {
-        for(byte b : byteArr)
-            sourceByteCode[bcIndex++] = b;
+        for(byte b : byteArr) {
+            mems[memSel][bcIndex] = b;
+            bcIndex++;
+            if(mems[memSel].length <= bcIndex) {
+                bcIndex = 0;
+                memSel++;
+                if(memSel == 14)
+                    memSel = 15;
+                if(memSel == 16)
+                    memSel = 0;
+            }
+        }
     }
 
     private short constStrToShort(String str) throws Exception {
