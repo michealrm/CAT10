@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U117_2to1_Mux.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U117_2to1_Mux.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

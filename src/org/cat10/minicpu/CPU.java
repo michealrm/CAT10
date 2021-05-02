@@ -40,7 +40,6 @@ public class CPU {
         ChipManager.chipMap.put("U102", new U102_OR());
         ChipManager.chipMap.put("U103", new U103_XOR());
         ChipManager.chipMap.put("U104", new U104_NOT());
-        ChipManager.chipMap.put("U107", new U107_AddSub());
         //ChipManager.chipMap.put("U120", new U120_2to1_Mux());
         //ChipManager.chipMap.put("U110", new U110_Flags());
 
@@ -48,7 +47,9 @@ public class CPU {
         ChipManager.chipMap.put("U111", new U111_8to1_Mux());
 
         // Stack
-        //ChipManager.chipMap.put("U117", new U117_2to1_Mux());
+        ChipManager.chipMap.put("U107", new U107_AddSub());
+        ChipManager.chipMap.put("U117", new U117_2to1_Mux());
+        ChipManager.chipMap.put("U14", new U14_StackPointer());
 
         // (DE)MUXes to registers
         ChipManager.chipMap.put("U118A", new U118A_8to1_Mux());

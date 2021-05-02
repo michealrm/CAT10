@@ -16,6 +16,10 @@ public class CAT10Util {
         return (byte)(b ^ 0xFF);
     }
 
+    public static short NotShort(short b) {
+        return (short)(b ^ 0xFFFF);
+    }
+
     public static byte Not(byte b) {
         return b == 0 ? (byte)1 : (byte)0;
         /*
@@ -43,6 +47,10 @@ public class CAT10Util {
 
     public static byte Nand(byte a, byte b) {
         return (byte) (NotByte(a) | NotByte(b));
+    }
+
+    public static short Nand(short a, short b) {
+        return (short) (NotShort(a) | NotShort(b));
     }
 
     public static AdderOutput subtractor(byte a, byte b) {

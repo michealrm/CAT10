@@ -1,5 +1,8 @@
 package org.cat10.minicpu.assembler;
 
+/**
+ * TODO: IDENTIFIER for SP, FLAGS, and labels
+ */
 public class Parser {
 
     private class ParserException extends Exception
