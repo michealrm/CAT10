@@ -50,6 +50,8 @@ public class U500_InstructionDecoderChip extends Chip {
     public void evaluateOut() {
         try {
             if(getChip("U999").getOutput("clock") == (byte)1) {
+                if(getChip("U12") != null && getChip("U12").getOutput("Q") == (byte)0xAA)
+                    System.out.println();
                 if (startOfExecution) {
                     isNewInstruction = true;
                     startOfExecution = false;
@@ -64,6 +66,7 @@ public class U500_InstructionDecoderChip extends Chip {
                 // When isNewInstruction is enabled, we expect that InstLen is set to the instruction length of the
                 // last instruction executed and MEM_1 contains the beginning of the last instruction executed.
                 if (isNewInstruction) {
+
                     // Don't update IP for new instruction because we're already on the next instruction to read
                     getChip("U15").putInput("ChipSelect", (byte) 0);
 

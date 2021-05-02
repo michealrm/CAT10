@@ -75,6 +75,7 @@ public class U114_2to4_Demux extends Chip {
                     getChip("U13").putInput("D", getChip("U118" + type).getOutput(type));
                     break;
             }
+            putInput("OutputEnable" + type, (byte) 0);
         }
     }
 }
