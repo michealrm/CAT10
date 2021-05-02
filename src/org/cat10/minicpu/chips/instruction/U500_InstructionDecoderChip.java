@@ -160,6 +160,10 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = (byte)0x82;
                                 putOutput("InstLen", (byte) 4);
                                 break;
+                            case (byte)0x83:
+                                opCode = (byte)0x83;
+                                putOutput("InstLen", (byte) 4);
+                                break;
                             default:
                                 opCode = (byte)0;
                                 putOutput("InstLen", (byte)1); // To increment IP to next instruction
@@ -178,6 +182,7 @@ public class U500_InstructionDecoderChip extends Chip {
                         // Setup and first cycle of instructions
                         switch (opCode) {
                             case (byte) 0x80:
+                                // mov R8, R8
                                 // First cycle
                                 regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
                                 regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
@@ -188,6 +193,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 break;
 
                             case (byte) 0x81:
+                                // mov R8, $HH
                                 getChip("U118A").putInput("sel", (byte) 2);
 
                                 // First cycle
@@ -204,6 +210,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = 0;
                                 break;
                             case (byte) 0x82:
+                                // mov R8, [$MMMM]
                                 // 0x82 [register byte] [mem lower] [mem upper]
 
                                 regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
@@ -217,6 +224,17 @@ public class U500_InstructionDecoderChip extends Chip {
                                 putOutput("ReadWrite", (byte) 0); // Read
 
                                 // Wait till [$MMMM] is read and put on MEM bus by T-Gate then in Cycle 2 we put in reg
+                                break;
+                            case (byte) 0x83:
+                                // mov [$MMMM], R8
+                                // 0x82 [register byte] [mem lower] [mem upper]
+
+                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+
+                                putOutput("INSTLower", getInput("MEM_3"));
+                                putOutput("INSTUpper", getInput("MEM_4"));
+
+                                getChip("U112").putInput("sel", regOperand2);
                                 break;
                             default:
                                 isNewInstruction = true;
@@ -242,6 +260,16 @@ public class U500_InstructionDecoderChip extends Chip {
                             getChip("U114").putInput("SelA", regOperand1);
                             getChip("U114").putInput("OutputEnableA", (byte) 1);
                             getChip("U114").putInput("OutputEnableB", (byte) 0);
+
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        // Second cycle of 0x83 MOV [$MMMM], R8
+                        else if(opCode == (byte) 0x83) {
+                            getChip("U116").putInput("sel", (byte) 2);
+
+                            putOutput("ReadWrite", (byte) 1); // Write
+                            getChip("U220").putInput("sel", (byte) 0);
 
                             isNewInstruction = true;
                             opCode = 0;

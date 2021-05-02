@@ -5,3 +5,5 @@ mov r0, r1
 *=$F000
 mov r0, $aa
 mov r1, r0
+mov [$4444], r1
+mov r2, [$4444]
