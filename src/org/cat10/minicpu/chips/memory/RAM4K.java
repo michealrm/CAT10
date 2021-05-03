@@ -38,7 +38,7 @@ public class RAM4K extends Chip {
                 // DATAUpper, ALU, and INST, and write that into the calculated/masked address
                 // * We mask here because upper 4 bits of memory address go to U255 decoder to ChipSelect a mem chip
                 int addr = ((getChip("U116").getOutput("MemAddrLower") & 0xF) << 8) | getChip("U116").getOutput("MemAddrUpper");
-                memory[addr] = getChip("U220").getOutput("8BitDataBus");
+                memory[addr&0xFFF] = getChip("U220").getOutput("8BitDataBus");
             }
         }
     }

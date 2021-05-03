@@ -8,17 +8,18 @@ import org.cat10.minicpu.chips.operations.registers.U10_Register0;
 import org.cat10.minicpu.chips.operations.registers.U11_Register1;
 import org.cat10.minicpu.chips.operations.registers.U12_Register2;
 import org.cat10.minicpu.chips.operations.registers.U13_Register3;
+import org.cat10.minicpu.ChipManager;
 
 /**
  * @see ChipManager for note about static CPU
  */
-public class CPU {
+public class CPU extends ChipManager{
 
     public static boolean CPU_IS_ON = true;
-    public static boolean DEBUG_REGS = true;
-    public static boolean DEBUG_MEMFETCH = true;
-    public static boolean DEBUG_IP = true;
-    public static boolean DEBUG_EXECUTION_DELAY = true;
+    public static boolean DEBUG_REGS = false;
+    public static boolean DEBUG_MEMFETCH = false;
+    public static boolean DEBUG_IP = false;
+    public static boolean DEBUG_EXECUTION_DELAY = false;
 
     /*
      * Set chips
@@ -104,10 +105,35 @@ public class CPU {
         // T-Gate
         ChipManager.chipMap.put("U221", new U221_TGate());
     }
+    
+    private static void printHeader(){
+    	
+    		
+    	
+    		System.out.print("-------------------------------------------------------------------------\n");
+    		System.out.print("MEM_1\t| MEM_2\t| MEM_3\t| MEM_4\t| REG_0\t| REG_1\t| REG_2\t| REG_3\t| IP\t| SP\t|\n");
+    		System.out.printf("x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X%02X\t| x%02X%02X\t|\n", 
+    				getChip("U500").getInput("MEM_1"), getChip("U500").getInput("MEM_2"), getChip("U500").getInput("MEM_3"), getChip("U500").getInput("MEM_4"),
+    				getChip("U10").getOutput("Q"), getChip("U11").getOutput("Q"), getChip("U12").getOutput("Q"), getChip("U13").getOutput("Q"),
+    				getChip("U15").getOutput("IPLower"), getChip("U15").getOutput("IPUpper"),
+    				getChip("U14").getOutput("SPLower"), getChip("U14").getOutput("SPUpper"));
+    		System.out.print("");
+    		
+    }
 
     public static void run() {
+    	int count=0;
         while(CPU_IS_ON) {
             ChipManager.updateChips();
+            if ((count++ % 20) == 0) {
+            	System.out.print("-----------------------------------------------------------------------------------------\n");
+        		System.out.print("MEM_1\t| MEM_2\t| MEM_3\t| MEM_4\t| REG_0\t| REG_1\t| REG_2\t| REG_3\t| IP\t| SP\t| FLAGS\t|\n");
+            }
+            System.out.printf("x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X\t| x%02X%02X\t| x%04X\n", 
+    				getChip("U500").getInput("MEM_1"), getChip("U500").getInput("MEM_2"), getChip("U500").getInput("MEM_3"), getChip("U500").getInput("MEM_4"),
+    				getChip("U10").getOutput("Q"), getChip("U11").getOutput("Q"), getChip("U12").getOutput("Q"), getChip("U13").getOutput("Q"),
+    				getChip("U15").getOutput("IPLower"), getChip("U15").getOutput("IPUpper"),
+    				(short)(getChip("U14").getOutput("SPLower")<<8|getChip("U14").getOutput("SPUpper")));
             if(DEBUG_EXECUTION_DELAY) {
                 try {
                     Thread.sleep(100);

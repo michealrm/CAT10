@@ -61,11 +61,16 @@ public class U13_Register3 extends Chip {
 
         // Print all regs since reg 3 is last
         if(CPU.DEBUG_REGS) {
-            System.out.printf("REGISTERS: \n\tRegister 0 = x%02X \n\tRegister 1 = x%02X \n\tRegister 2 = x%02X \n\tRegister 3 = x%02X\n"
+            System.out.printf("REGISTERS:						      |"
+            		+ "\n\tRegister 0 = x%02X 				      |"
+            		+ "\n\tRegister 1 = x%02X 				      |"
+            		+ "\n\tRegister 2 = x%02X 				      |"
+            		+ "\n\tRegister 3 = x%02X				      |\n"
                     , getChip("U10").getOutput("Q")
                     , getChip("U11").getOutput("Q")
                     , getChip("U12").getOutput("Q")
                     , getOutput("Q"));
+            System.out.println("--------------------------------------------------------------|");
         }
     }
 
