@@ -171,6 +171,10 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = (byte)0x90;
                                 putOutput("InstLen", (byte) 2);
                                 break;
+                            case (byte)0xA0:
+                                opCode = (byte)0xA0;
+                                putOutput("InstLen", (byte) 2);
+                                break;
                             default:
                                 opCode = (byte)0;
                                 putOutput("InstLen", (byte)1); // To increment IP to next instruction
@@ -250,6 +254,11 @@ public class U500_InstructionDecoderChip extends Chip {
                                 regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
                                 getChip("U112").putInput("sel", regOperand1);
                                 break;
+                            case (byte) 0xA0:
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                getChip("U116").putInput("sel", (byte) 1);
+                                putOutput("ReadWrite", (byte) 0);
+                                break;
                             default:
                                 isNewInstruction = true;
                                 putOutput("InstLen", (byte)1); // Skip the no-op
@@ -298,6 +307,15 @@ public class U500_InstructionDecoderChip extends Chip {
                             getChip("U107").putInput("CarryIn", (byte) 1);
                             getChip("U117").putInput("sel", (byte) 1);
                             getChip("U14").putInput("ChipSelect", (byte) 1);
+
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        else if(opCode == (byte) 0xA0) {
+                            getChip("U118A").putInput("sel", (byte) 5); // Select MEM
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
 
                             isNewInstruction = true;
                             opCode = 0;
