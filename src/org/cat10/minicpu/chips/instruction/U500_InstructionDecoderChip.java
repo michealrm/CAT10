@@ -167,6 +167,10 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = (byte)0x83;
                                 putOutput("InstLen", (byte) 4);
                                 break;
+                            case (byte)0x90:
+                                opCode = (byte)0x90;
+                                putOutput("InstLen", (byte) 2);
+                                break;
                             default:
                                 opCode = (byte)0;
                                 putOutput("InstLen", (byte)1); // To increment IP to next instruction
@@ -239,6 +243,13 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 getChip("U112").putInput("sel", regOperand2);
                                 break;
+
+                            case (byte) 0x90:
+                                // push R8
+                                // 0x90 [register byte]
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                getChip("U112").putInput("sel", regOperand1);
+                                break;
                             default:
                                 isNewInstruction = true;
                                 putOutput("InstLen", (byte)1); // Skip the no-op
@@ -246,6 +257,7 @@ public class U500_InstructionDecoderChip extends Chip {
                         isOpcode = false;
                     } else {
                         // Second and further cycles
+                        regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
 
                         // Second cycle of 0x80 MOV R8,R8
                         if (opCode == (byte) 0x80) {
@@ -273,6 +285,19 @@ public class U500_InstructionDecoderChip extends Chip {
 
                             putOutput("ReadWrite", (byte) 1); // Write
                             getChip("U220").putInput("sel", (byte) 0);
+
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        // Second cycle of 0x90 PUSH R8
+                        else if(opCode == (byte) 0x90) {
+                            getChip("U116").putInput("sel", (byte) 1);
+                            putOutput("ReadWrite", (byte) 1);
+                            getChip("U220").putInput("sel", (byte) 0);
+
+                            getChip("U107").putInput("CarryIn", (byte) 1);
+                            getChip("U117").putInput("sel", (byte) 1);
+                            getChip("U14").putInput("ChipSelect", (byte) 1);
 
                             isNewInstruction = true;
                             opCode = 0;

@@ -20,6 +20,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U117_2to1_Mux extends Chip{
 	public U117_2to1_Mux() {
 		super("U117");
+		putInput("sel", (byte) 0);
 		putOutput("SPNewLower", (byte) 0);
 		putOutput("SPNewUpper", (byte) 0);
 	}

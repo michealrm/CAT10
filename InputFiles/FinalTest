@@ -7,3 +7,5 @@ mov r0, $aa
 mov r1, r0
 mov [$4444], r1
 mov r2, [$4444]
+push r2
+mov r3, [$C000]

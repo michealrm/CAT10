@@ -63,6 +63,8 @@ public class U14_StackPointer extends Chip {
 
             putOutput("SPLower", (byte) ((slaveNandOutput2a & 0xFF00) >> 8));
             putOutput("SPUpper", (byte) (slaveNandOutput2a & 0xFF));
+
+            putInput("ChipSelect", (byte) 0);
         }
     }
 }

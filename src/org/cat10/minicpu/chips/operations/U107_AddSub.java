@@ -18,6 +18,7 @@ import static org.cat10.minicpu.ChipManager.getChip;
 public class U107_AddSub extends Chip {
 	public U107_AddSub() {
 		super("U107");
+		putInput("CarryIn", (byte) 0);
 		putOutput("IPIncLower", (byte) 0);
 		putOutput("IPIncUpper", (byte) 0);
 	}
