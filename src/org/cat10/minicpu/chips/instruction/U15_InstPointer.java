@@ -39,7 +39,9 @@ public class U15_InstPointer extends Chip {
                 putOutput("IPUpper", getChip("U115").getOutput("IPNewUpper"));
             }
             if(CPU.DEBUG_IP)
-                System.out.printf("Clock is low, IP is: x%02X%02X\n", getOutput("IPLower"), getOutput("IPUpper"));
+                System.out.printf("Clock is low, IP is: x%02X%02X				      |\n"
+                		, getOutput("IPLower"), getOutput("IPUpper"));
+            	//System.out.println("--------------------------------------------------------------|\n\n");
         }
     }
 }

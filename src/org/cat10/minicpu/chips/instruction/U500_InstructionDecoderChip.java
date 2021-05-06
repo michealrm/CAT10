@@ -330,7 +330,11 @@ public class U500_InstructionDecoderChip extends Chip {
             }
         } finally {
             if(CPU.DEBUG_MEMFETCH);
-                System.out.printf("MEMORY: (MEM_1=x%02X), (MEM_2=x%02X), (MEM_3=x%02X), (MEM_4=x%02X)\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4"));
+                //System.out.printf("\nMEMORY: MEM_1=x%02X | (MEM_2=x%02X) | (MEM_3=x%02X) | (MEM_4=x%02X) |\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4" ));
+            	//System.out.printf("\nMEMORY: \n\tMEM_1 = x%02X 					      |", getInput("MEM_1"));
+            	//System.out.printf("\n\tMEM_2 = x%02X					      |", getInput("MEM_2"));
+            	//System.out.printf("\n\tMEM_3 = x%02X 					      |", getInput("MEM_3"));
+                //System.out.println("\n--------------------------------------------------------------|");
         }
     }
 
