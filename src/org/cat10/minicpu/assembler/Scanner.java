@@ -21,9 +21,11 @@ public class Scanner {
     }
 
     public String sourceFileNm;
-    private ArrayList<String> sourceLineM;
+    public ArrayList<String> sourceLineM;
     public int iSourceLineNr;
     public int iColPos;
+    public int iSavedSourceLineNr;
+    public int iSavedColPos;
     public int iNextSourceLineNr;
     public int iNextColPos;
 
@@ -140,6 +142,8 @@ public class Scanner {
                 return isWhitespace(token) && isWhitespace(c);
             case MNEMONIC:
                 return containsMnemonic(token.tokenSB.toString() + c);
+            case IDENTIFIER:
+                return !isWhitespace(c) && !isSeparator(c);
         }
     }
 
@@ -163,6 +167,8 @@ public class Scanner {
             token.classif = Classif.REGISTER;
         } else if(containsMnemonic(token.tokenSB.toString())) {
             token.classif = Classif.MNEMONIC;
+        } else {
+            token.classif = Classif.IDENTIFIER;
         }
     }
 
@@ -247,7 +253,7 @@ public class Scanner {
     }
 
     private boolean containsMnemonic(String str) {
-        return containsIn(str, "MOV", "ADDC", "SUBB", "CMP", "NOT", "AND", "OR", "XOR", "PUSH", "POP");
+        return containsIn(str, "MOV", "ADDC", "SUBB", "CMP", "NOT", "AND", "OR", "XOR", "PUSH", "POP", "JMP");
     }
 
     private boolean isWhitespace(Token token) {
@@ -260,11 +266,11 @@ public class Scanner {
 
     private boolean isSeparator(Token token) {
         char c = token.tokenSB.charAt(0);
-        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':';
     }
 
     private boolean isSeparator(char c) {
-        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':';
     }
 
     private boolean isIntConst(Token token) {
@@ -280,6 +286,17 @@ public class Scanner {
             if(s.contains(match))
                 return true;
         return false;
+    }
+
+    public void saveLocation() {
+        iSavedSourceLineNr = iSourceLineNr;
+        iSavedColPos = iColPos;
+    }
+
+    public void restoreLocation() throws Exception {
+        iSourceLineNr = iSavedSourceLineNr;
+        iColPos = iSavedColPos;
+        getNext();
     }
 
 }

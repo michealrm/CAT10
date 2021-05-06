@@ -7,4 +7,5 @@ public enum Classif {
     INTCONST,   // Examples: ABCD, 10AF, FF
     SEPARATOR,   // '[', ']', ','
     EOF,
+    IDENTIFIER
 }
