@@ -178,6 +178,14 @@ public class Parser {
                     bcIndex = loc & 0x0FFF;
             }
         }
+
+        // Check for any forward jumps not found
+        if(!jmpLabelWaitingRoom.isEmpty()) {
+            String labels = "";
+            for(String label : jmpLabelWaitingRoom.keySet())
+                labels += label + ",  ";
+            error("Forward jumps for label(s) [%s] were not found in the file.");
+        }
     }
 
     private void MOVInstruction() throws Exception {
