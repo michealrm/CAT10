@@ -102,11 +102,32 @@ public class Parser {
                 if(jmpLabelWaitingRoom.get(labelName) != null) {
                     ArrayList<Short> callbacks = jmpLabelWaitingRoom.get(labelName);
                     for(Short callbackAddr : callbacks) {
+                        callbackAddr = (short)(callbackAddr.shortValue() - 1); // Just so we can check if the opcode is absolute or relative jump
                         byte cbMemSel = (byte)(callbackAddr >> 12);
                         short cbIndex = (short)(callbackAddr & 0xFFF);
+
+                        boolean isAbsolute = true;
+                        if(mems[cbMemSel][cbIndex] != (byte) 0x10) {
+                            // Use offset for conditional jumps
+                            short offset = (short)(addr - callbackAddr);
+                            cbMemSel = (byte)(offset >> 12);
+                            cbIndex = (short)(offset & 0xFFF);
+                        }
+
+                        // Increment to lower byte of jump target
+                        cbIndex++;
+                        if(mems[cbMemSel].length <= cbIndex) {
+                            cbIndex = 0;
+                            cbMemSel++;
+                            if(cbMemSel == 14)
+                                cbMemSel = 15;
+                            if(cbMemSel == 16)
+                                cbMemSel = 0;
+                        }
+
                         mems[cbMemSel][cbIndex] = (byte)((addr & 0xFF00) >> 8);
 
-                        // Increment to set next byte
+                        // Increment to upper byte of jump target
                         cbIndex++;
                         if(mems[cbMemSel].length <= cbIndex) {
                             cbIndex = 0;
@@ -124,6 +145,7 @@ public class Parser {
                 continue;
             }
 
+            byte opCode;
             switch(scan.currentToken.tokenStr) {
                 // Data manipulation
                 case "MOV":
@@ -167,6 +189,19 @@ public class Parser {
                         errorWithCurrent("but a JMP can only take an address for absolute jump or label for relative jump");
                     }
                     break;
+
+                case "JE":
+                case "JNE":
+                case "JG":
+                case "JGE":
+                case "JL":
+                case "JLE":
+                case "JA":
+                case "JAE":
+                case "JB":
+                case "JBE":
+                    ConditionalJumpInstructions();
+                    break;
                 case "*":
                     // *=$MMMM
                     if(!scan.getNext().tokenStr.equals("="))
@@ -186,6 +221,49 @@ public class Parser {
                 labels += label + ",  ";
             error("Forward jumps for label(s) [%s] were not found in the file.", labels);
         }
+    }
+
+    private void ConditionalJumpInstructions() throws Exception {
+        byte opCode = (byte) 0;
+        switch(scan.currentToken.tokenStr) {
+            case "JE":
+                opCode = (byte) 0x11;
+                break;
+            case "JNE":
+                opCode = (byte) 0x12;
+                break;
+            case "JG":
+                opCode = (byte) 0x13;
+                break;
+            case "JGE":
+                opCode = (byte) 0x14;
+                break;
+            case "JL":
+                opCode = (byte) 0x15;
+                break;
+            case "JLE":
+                opCode = (byte) 0x16;
+                break;
+            case "JA":
+                opCode = (byte) 0x17;
+                break;
+            case "JAE":
+                opCode = (byte) 0x18;
+                break;
+            case "JB":
+                opCode = (byte) 0x19;
+                break;
+            case "JBE":
+                opCode = (byte) 0x1A;
+                break;
+        }
+
+        scan.getNext();
+        writeBytes(opCode);
+
+        short offset = (short)(Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16) - getCurrentAddress());
+
+        writeBytes(((byte) ((offset & 0xFF00) >> 8)), (byte) (offset & 0xFF));
     }
 
     private void MOVInstruction() throws Exception {
@@ -526,6 +604,8 @@ public class Parser {
         }
     }
 
+    // Util
+
     /**
      * Either finds the label in localLocations or will place in the jmpLabelWaitingRoom to be set later when we get
      * to the label
@@ -543,8 +623,6 @@ public class Parser {
             return (short) 0;
         }
     }
-
-    // Util
 
     private void writeBytes(byte... byteArr) {
         for(byte b : byteArr) {
