@@ -184,7 +184,7 @@ public class Parser {
             String labels = "";
             for(String label : jmpLabelWaitingRoom.keySet())
                 labels += label + ",  ";
-            error("Forward jumps for label(s) [%s] were not found in the file.");
+            error("Forward jumps for label(s) [%s] were not found in the file.", labels);
         }
     }
 
