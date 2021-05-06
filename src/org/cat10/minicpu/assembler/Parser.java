@@ -102,16 +102,13 @@ public class Parser {
                 if(jmpLabelWaitingRoom.get(labelName) != null) {
                     ArrayList<Short> callbacks = jmpLabelWaitingRoom.get(labelName);
                     for(Short callbackAddr : callbacks) {
-                        callbackAddr = (short)(callbackAddr.shortValue() - 1); // Just so we can check if the opcode is absolute or relative jump
-                        byte cbMemSel = (byte)(callbackAddr >> 12);
+                        callbackAddr = (short)(callbackAddr - 1); // Just so we can check if the opcode is absolute or relative jump
+                        byte cbMemSel = (byte)((callbackAddr >> 12) & 0xF);
                         short cbIndex = (short)(callbackAddr & 0xFFF);
 
-                        boolean isAbsolute = true;
                         if(mems[cbMemSel][cbIndex] != (byte) 0x10) {
                             // Use offset for conditional jumps
-                            short offset = (short)(addr - callbackAddr);
-                            cbMemSel = (byte)(offset >> 12);
-                            cbIndex = (short)(offset & 0xFFF);
+                            addr = (short)(addr - (callbackAddr + 3)); // Added 3 to get address of next instruction
                         }
 
                         // Increment to lower byte of jump target
@@ -261,7 +258,17 @@ public class Parser {
         scan.getNext();
         writeBytes(opCode);
 
-        short offset = (short)(Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16) - getCurrentAddress());
+        short absoluteAddr = 0;
+        if(scan.currentToken.classif == Classif.IDENTIFIER) {
+            String labelName = scan.currentToken.tokenStr;
+            absoluteAddr = findLabel(labelName);
+        }
+        else if(scan.currentToken.classif == Classif.INTCONST)
+            absoluteAddr = (short) Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16);
+        else
+            errorWithCurrent("Expected either a label or absolute address for conditional/relative jump");
+
+        short offset = (short) (absoluteAddr - (getCurrentAddress() + 2));
 
         writeBytes(((byte) ((offset & 0xFF00) >> 8)), (byte) (offset & 0xFF));
     }
