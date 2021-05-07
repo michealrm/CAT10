@@ -21,7 +21,7 @@ public class U103_XOR extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("XOR", (byte)(getChip("U112").getOutput("DATALower") | getChip("U113").getOutput("DATALower")));
+		putOutput("XOR", (byte)(getChip("U112").getOutput("DATALower") ^ getChip("U113").getOutput("DATAUpper")));
 	}
 
 	/* Output Xor(0-7) to U111 */

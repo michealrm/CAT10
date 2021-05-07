@@ -29,6 +29,6 @@ public class U102_OR extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("OR", (byte)(getChip("U112").getOutput("DATALower") | getChip("U113").getOutput("DATALower")));
+		putOutput("OR", (byte)(getChip("U112").getOutput("DATALower") | getChip("U113").getOutput("DATAUpper")));
 	}
 }

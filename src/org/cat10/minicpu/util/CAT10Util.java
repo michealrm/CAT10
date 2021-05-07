@@ -5,6 +5,7 @@ public class CAT10Util {
     public static class AdderOutput {
         public byte sum;
         public byte carryOut;
+        public byte flags;
 
         public AdderOutput() { }
     }
@@ -30,6 +31,8 @@ public class CAT10Util {
 
         out.sum = (byte) (s0.sum | s1.sum << 1 | s2.sum << 2 | s3.sum << 3 |s4.sum << 4 |s5.sum << 5 |s6.sum << 6 |s7.sum << 7);
         out.carryOut = s7.carryOut;
+
+        // TODO: Add flags
 
         return out;
     }
