@@ -1,0 +1,4 @@
+*=$F000
+mov r3, $FF
+push r3
+pop r2

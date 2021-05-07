@@ -28,19 +28,21 @@ public class U220_4to1_Mux extends Chip {
 
     @Override
     public void evaluateOut() {
-        switch(getInput("sel")) {
-            case 0:
-                putOutput("8BitDataBus", getChip("U112").getOutput("DATALower"));
-                break;
-            case 1:
-                putOutput("8BitDataBus", getChip("U113").getOutput("DATAUpper"));
-                break;
-            case 2:
-                putOutput("8BitDataBus", getChip("U111").getOutput("ALU"));
-                break;
-            case 3:
-                putOutput("8BitDataBus", getChip("U111").getOutput("INSTLower"));
-                break;
+        if(getChip("U500").getOutput("ReadWrite") == (byte)1) {
+            switch (getInput("sel")) {
+                case 0:
+                    putOutput("8BitDataBus", getChip("U112").getOutput("DATALower"));
+                    break;
+                case 1:
+                    putOutput("8BitDataBus", getChip("U113").getOutput("DATAUpper"));
+                    break;
+                case 2:
+                    putOutput("8BitDataBus", getChip("U111").getOutput("ALU"));
+                    break;
+                case 3:
+                    putOutput("8BitDataBus", getChip("U111").getOutput("INSTLower"));
+                    break;
+            }
         }
     }
 }

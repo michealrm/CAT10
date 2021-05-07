@@ -1,5 +1,11 @@
 package org.cat10.minicpu.assembler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * TODO: IDENTIFIER for SP, FLAGS, and labels
+ */
 public class Parser {
 
     private class ParserException extends Exception
@@ -34,8 +40,15 @@ public class Parser {
     }
 
     private final Scanner scan;
-    private final byte[] sourceByteCode;  // Will place into RAM
+    public byte[][] mems;          // Array of 4K memory up to 15 chips, where index 14 is IO and null
+    private int memSel;             // Selection of memory chip. 14 is IO which is null, so we'll wrap over to 15
     private int bcIndex;            // Index in sourceByteCode. Placed on a valid byte to write
+    private HashMap<String, Short> labelLocations; // Key is the label name, value is address for memSel chip at index bcIndex
+
+    // Holds locations of memory where a jmp needs a label that is later in the file. Can handle both absolute and
+    // relative jumps because we can check the opcode before placing the address or offset
+    private HashMap<String, ArrayList<Short>>  jmpLabelWaitingRoom; // Key=(label that we're waiting on the address)
+                                                                    // Value=(List of addresses to set address of label)
 
     // *** Bytes defined in order of: R8:R8, R8:$HH, R8:[MEM], [MEM]:R8 ***
     private static final byte[] addcOpcodes = {0x10, 0x11, 0x12, 0x13};
@@ -48,9 +61,18 @@ public class Parser {
     private static final byte[] pushOpcodes = {(byte)0x90};
     private static final byte[] popOpcodes = {(byte)0xA0};
 
-    public Parser(Scanner scan, byte[] codeMemory) {
+    public Parser(Scanner scan) {
         this.scan = scan;
-        this.sourceByteCode = codeMemory;
+        labelLocations = new HashMap<>();
+        jmpLabelWaitingRoom = new HashMap<>();
+
+        mems = new byte[16][];
+        for(int i = 0; i < 16; i++) {
+            if(i == 14)
+                continue;
+            else
+                mems[i] = new byte[0x1000]; // 4K
+        }
     }
 
     /**
@@ -64,9 +86,63 @@ public class Parser {
             if(scan.currentToken.classif == Classif.EOF)
                 break;
 
-            if(scan.currentToken.classif != Classif.MNEMONIC)
+            if(scan.currentToken.classif != Classif.MNEMONIC && !scan.currentToken.tokenStr.equals("*") && scan.currentToken.classif != Classif.IDENTIFIER)
                 errorWithCurrent("Expected a mnemonic for the start of a statement");
 
+            if(scan.currentToken.classif == Classif.IDENTIFIER) {
+                String labelName = scan.currentToken.tokenStr;
+                scan.getNext();
+                if(!scan.currentToken.tokenStr.equals(":"))
+                    errorWithCurrent("Expected ':' following label");
+
+                short addr = getCurrentAddress();
+
+                labelLocations.put(labelName, addr);
+
+                if(jmpLabelWaitingRoom.get(labelName) != null) {
+                    ArrayList<Short> callbacks = jmpLabelWaitingRoom.get(labelName);
+                    for(Short callbackAddr : callbacks) {
+                        callbackAddr = (short)(callbackAddr - 1); // Just so we can check if the opcode is absolute or relative jump
+                        byte cbMemSel = (byte)((callbackAddr >> 12) & 0xF);
+                        short cbIndex = (short)(callbackAddr & 0xFFF);
+
+                        if(mems[cbMemSel][cbIndex] != (byte) 0x10) {
+                            // Use offset for conditional jumps
+                            addr = (short)(addr - (callbackAddr + 3)); // Added 3 to get address of next instruction
+                        }
+
+                        // Increment to lower byte of jump target
+                        cbIndex++;
+                        if(mems[cbMemSel].length <= cbIndex) {
+                            cbIndex = 0;
+                            cbMemSel++;
+                            if(cbMemSel == 14)
+                                cbMemSel = 15;
+                            if(cbMemSel == 16)
+                                cbMemSel = 0;
+                        }
+
+                        mems[cbMemSel][cbIndex] = (byte)((addr & 0xFF00) >> 8);
+
+                        // Increment to upper byte of jump target
+                        cbIndex++;
+                        if(mems[cbMemSel].length <= cbIndex) {
+                            cbIndex = 0;
+                            cbMemSel++;
+                            if(cbMemSel == 14)
+                                cbMemSel = 15;
+                            if(cbMemSel == 16)
+                                cbMemSel = 0;
+                        }
+
+                        mems[cbMemSel][cbIndex] = (byte)(addr & 0xFF);
+                    }
+                    jmpLabelWaitingRoom.remove(labelName);
+                }
+                continue;
+            }
+
+            byte opCode;
             switch(scan.currentToken.tokenStr) {
                 // Data manipulation
                 case "MOV":
@@ -92,8 +168,109 @@ public class Parser {
                 case "POP":
                     STACKInstructions();
                     break;
+
+                // Absolute jump
+                case "JMP":
+                    scan.getNext();
+                    if(scan.currentToken.classif == Classif.INTCONST) {
+                        short opConst = (short)(Integer.parseInt(scan.currentToken.tokenStr, 16)); // Bad, no error checking
+                        writeBytes((byte) 0x10, (byte)((opConst & 0xFF00) >> 8), (byte)(opConst & 0xFF));
+                    }
+                    else if(scan.currentToken.classif == Classif.IDENTIFIER) {
+                        writeBytes((byte) 0x10); // So we're at where we'd put the 2 byte address
+                        String labelName = scan.currentToken.tokenStr;
+                        short labelLocationOrEmpty = findLabel(labelName);
+                        writeBytes((byte)((labelLocationOrEmpty & 0xFF00) >> 8), (byte)(labelLocationOrEmpty & 0xFF));
+                    }
+                    else {
+                        errorWithCurrent("but a JMP can only take an address for absolute jump or label for relative jump");
+                    }
+                    break;
+
+                case "JE":
+                case "JNE":
+                case "JG":
+                case "JGE":
+                case "JL":
+                case "JLE":
+                case "JA":
+                case "JAE":
+                case "JB":
+                case "JBE":
+                    ConditionalJumpInstructions();
+                    break;
+                case "*":
+                    // *=$MMMM
+                    if(!scan.getNext().tokenStr.equals("="))
+                        errorWithCurrent("Expected = for *=$MMMM");
+                    if(scan.getNext().classif != Classif.INTCONST)
+                        errorWithCurrent("Expected INTCONST for *=$MMMM");
+                    int loc = Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16);
+                    memSel = (loc & 0xF000) >> 12;
+                    bcIndex = loc & 0x0FFF;
             }
         }
+
+        // Check for any forward jumps not found
+        if(!jmpLabelWaitingRoom.isEmpty()) {
+            String labels = "";
+            for(String label : jmpLabelWaitingRoom.keySet())
+                labels += label + ",  ";
+            error("Forward jumps for label(s) [%s] were not found in the file.", labels);
+        }
+    }
+
+    private void ConditionalJumpInstructions() throws Exception {
+        byte opCode = (byte) 0;
+        switch(scan.currentToken.tokenStr) {
+            case "JE":
+                opCode = (byte) 0x11;
+                break;
+            case "JNE":
+                opCode = (byte) 0x12;
+                break;
+            case "JG":
+                opCode = (byte) 0x13;
+                break;
+            case "JGE":
+                opCode = (byte) 0x14;
+                break;
+            case "JL":
+                opCode = (byte) 0x15;
+                break;
+            case "JLE":
+                opCode = (byte) 0x16;
+                break;
+            case "JA":
+                opCode = (byte) 0x17;
+                break;
+            case "JAE":
+                opCode = (byte) 0x18;
+                break;
+            case "JB":
+                opCode = (byte) 0x19;
+                break;
+            case "JBE":
+                opCode = (byte) 0x1A;
+                break;
+        }
+
+        scan.getNext();
+        writeBytes(opCode);
+
+        short absoluteAddr = 0;
+        if(scan.currentToken.classif == Classif.IDENTIFIER) {
+            String labelName = scan.currentToken.tokenStr;
+            absoluteAddr = findLabel(labelName);
+        }
+        else if(scan.currentToken.classif == Classif.INTCONST)
+            absoluteAddr = (short) Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16);
+        else
+            errorWithCurrent("Expected either a label or absolute address for conditional/relative jump");
+
+        short offset = (short) (absoluteAddr - (getCurrentAddress() + 2));
+
+        writeBytes(((byte) ((offset & 0xFF00) >> 8)), (byte) (offset & 0xFF));
     }
 
     private void MOVInstruction() throws Exception {
@@ -436,16 +613,48 @@ public class Parser {
 
     // Util
 
+    /**
+     * Either finds the label in localLocations or will place in the jmpLabelWaitingRoom to be set later when we get
+     * to the label
+     * @param labelName The label name whose addres we're trying to find
+     * @return Either address of the label or 0 if we don't find it. This is fine to place in mem because it will be
+     *  overwritten with an address when we get to the label
+     * @throws Exception
+     */
+    private short findLabel(String labelName) throws Exception {
+        if(labelLocations.containsKey(labelName)) {
+            return labelLocations.get(labelName);
+        } else {
+            jmpLabelWaitingRoom.computeIfAbsent(labelName, k -> new ArrayList<>());
+            jmpLabelWaitingRoom.get(labelName).add(getCurrentAddress());
+            return (short) 0;
+        }
+    }
+
     private void writeBytes(byte... byteArr) {
-        for(byte b : byteArr)
-            sourceByteCode[bcIndex++] = b;
+        for(byte b : byteArr) {
+            mems[memSel][bcIndex] = b;
+            bcIndex++;
+            if(mems[memSel].length <= bcIndex) {
+                bcIndex = 0;
+                memSel++;
+                if(memSel == 14)
+                    memSel = 15;
+                if(memSel == 16)
+                    memSel = 0;
+            }
+        }
+    }
+
+    private short getCurrentAddress() {
+        return (short) ((memSel << 12) | (bcIndex & 0xFFF));
     }
 
     private short constStrToShort(String str) throws Exception {
-        int end = str.startsWith("$") ? 1 : 0; // Don't iterate down to the '$' because it's not apart of the number...
+        int start = str.startsWith("$") ? 1 : 0; // Don't iterate down to the '$' because it's not apart of the number...
         short num = 0;
         int index = 0;
-        for(int i = str.length() - 1; i >= end; i--) {
+        for(int i = str.length() - 1; i >= start; i--) {
             num |= hexDigitToByte(str.charAt(i)) << index * 4;
             index++;
         }

@@ -1,0 +1,10 @@
+*=$F000
+lbl_Test:
+mov r0, r1
+jg lbl_Test
+mov r3, r2
+jl lbl_Forward
+mov r3, $1a
+mov r2, $02
+lbl_Forward:
+mov r3, r1

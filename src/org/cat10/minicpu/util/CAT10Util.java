@@ -1,5 +1,7 @@
 package org.cat10.minicpu.util;
 
+import static org.cat10.minicpu.ChipManager.getChip;
+
 public class CAT10Util {
 
     public static class AdderOutput {
@@ -10,8 +12,45 @@ public class CAT10Util {
         public AdderOutput() { }
     }
 
+    public static byte NotByte(byte b) {
+        return (byte)(b ^ 0xFF);
+    }
+
+    public static short NotShort(short b) {
+        return (short)(b ^ 0xFFFF);
+    }
+
     public static byte Not(byte b) {
         return b == 0 ? (byte)1 : (byte)0;
+        /*
+        int lengthInBits = 0;
+        byte temp = b;
+        if((temp & 0x80) >> 7 == (byte)1 || temp == 0) {
+            temp &= 0x7F; // Get rid of sign extension AND if value is already 0, we need to flip to 1. Normally length for
+            lengthInBits++; // ... 0 would be 0
+        }
+        while(temp != 0) {
+            temp >>= 1;
+            lengthInBits++;
+        }
+
+        for(int i = 0; i < lengthInBits; i++) {
+            b ^= 1 << i; // Flip the ith bit up to lengthInBits-1
+        }
+
+        // If we have 0, flip it to 1 even though length in bits is 0
+        if(lengthInBits == 0)
+            b = 1;
+        return b;
+         */
+    }
+
+    public static byte Nand(byte a, byte b) {
+        return (byte) (NotByte(a) | NotByte(b));
+    }
+
+    public static short Nand(short a, short b) {
+        return (short) (NotShort(a) | NotShort(b));
     }
 
     public static AdderOutput subtractor(byte a, byte b) {
@@ -20,19 +59,16 @@ public class CAT10Util {
 
     public static AdderOutput fullAdderByte(byte carryIn, byte a, byte b) {
         AdderOutput out = new AdderOutput();
-        AdderOutput s0 = fullAdder(carryIn, (byte)(a & 0x1), (byte)(b & 0x1 ^ carryIn));
-        AdderOutput s1 = fullAdder(carryIn, (byte)(a & 0x2), (byte) (b & 0x2 ^ s0.carryOut));
-        AdderOutput s2 = fullAdder(carryIn, (byte)(a & 0x4), (byte) (b & 0x4 ^ s1.carryOut));
-        AdderOutput s3 = fullAdder(carryIn, (byte)(a & 0x8), (byte) (b & 0x8 ^ s2.carryOut));
-        AdderOutput s4 = fullAdder(carryIn, (byte)(a & 0x10), (byte) (b & 0x10 ^ s3.carryOut));
-        AdderOutput s5 = fullAdder(carryIn, (byte)(a & 0x20), (byte) (b & 0x20 ^ s4.carryOut));
-        AdderOutput s6 = fullAdder(carryIn, (byte)(a & 0x40), (byte) (b & 0x40 ^ s5.carryOut));
-        AdderOutput s7 = fullAdder(carryIn, (byte)(a & 0x80), (byte) (b & 0x80 ^ s6.carryOut));
 
-        out.sum = (byte) (s0.sum | s1.sum << 1 | s2.sum << 2 | s3.sum << 3 |s4.sum << 4 |s5.sum << 5 |s6.sum << 6 |s7.sum << 7);
-        out.carryOut = s7.carryOut;
+        if(carryIn == 1)
+            b = (byte)-b;
 
-        // TODO: Add flags
+        short sum = (short)(a + b);
+        byte carry = (byte)((sum & 0x100) >> 8);
+        sum = (short)(sum & 0xFF);
+
+        out.sum = (byte)sum;
+        out.carryOut = carry;
 
         return out;
     }

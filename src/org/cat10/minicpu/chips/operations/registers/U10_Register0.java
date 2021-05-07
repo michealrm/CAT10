@@ -1,9 +1,11 @@
 package org.cat10.minicpu.chips.operations.registers;
 
+import org.cat10.minicpu.CPU;
 import org.cat10.minicpu.chips.Chip;
 
 import static org.cat10.minicpu.ChipManager.getChip;
-import static org.cat10.minicpu.util.CAT10Util.Not;
+import static org.cat10.minicpu.util.CAT10Util.*;
+import static org.cat10.minicpu.util.CAT10Util.Nand;
 
 /**
  * Inputs:
@@ -37,16 +39,23 @@ public class U10_Register0 extends Chip {
         byte D = getInput("D");
         byte clock = getChip("U999").getOutput("clock");
         byte notClock = Not(clock);
-        if(getInput("ChipSelect") != 0) {
-            masterNandOutput1a = Not((byte) (D & notClock));
-            masterNandOutput1b = Not((byte) (notClock & Not(D)));
-            masterNandOutput2b = Not((byte) (masterNandOutput2a & masterNandOutput1b));
-            masterNandOutput2a = Not((byte) (masterNandOutput1a & masterNandOutput2b));
 
-            slaveNandOutput1a = Not((byte) (masterNandOutput2a & clock));
-            slaveNandOutput1b = Not((byte) (clock & Not(masterNandOutput2a)));
-            slaveNandOutput2b = Not((byte) (slaveNandOutput2a & slaveNandOutput1b));
-            slaveNandOutput2a = Not((byte) (slaveNandOutput1a & slaveNandOutput2b));
+        if(clock == 1)
+            clock = (byte)0xFF;
+        if(notClock == 1)
+            notClock = (byte)0xFF;
+
+
+        if(getInput("ChipSelect") != 0) {
+            masterNandOutput1a = Nand(D, clock);
+            masterNandOutput1b = Nand(NotByte(D), clock);
+            masterNandOutput2b = Nand(masterNandOutput1b, masterNandOutput2a);
+            masterNandOutput2a = Nand(masterNandOutput1a, masterNandOutput2b);
+
+            slaveNandOutput1a = Nand(masterNandOutput2a, notClock);
+            slaveNandOutput1b = Nand(notClock, masterNandOutput2b);
+            slaveNandOutput2b = Nand(slaveNandOutput2a, slaveNandOutput1b);
+            slaveNandOutput2a = Nand(slaveNandOutput1a, slaveNandOutput2b);
 
             putOutput("Q", slaveNandOutput2a);
         }

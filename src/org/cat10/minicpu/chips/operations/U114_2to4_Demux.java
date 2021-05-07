@@ -47,31 +47,35 @@ public class U114_2to4_Demux extends Chip {
         if(getInput("OutputEnable" + type) != 0) {
             switch(getInput("Sel" + type)) {
                 case 0:
-                    getChip("U10").putOutput("ChipSelect", (byte)1);
-                    getChip("U11").putOutput("ChipSelect", (byte)0);
-                    getChip("U12").putOutput("ChipSelect", (byte)0);
-                    getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U10").putOutput("D", getChip("U118" + type).getOutput(type));
+                    getChip("U10").putInput("ChipSelect", (byte)1);
+                    getChip("U11").putInput("ChipSelect", (byte)0);
+                    getChip("U12").putInput("ChipSelect", (byte)0);
+                    getChip("U13").putInput("ChipSelect", (byte)0);
+                    getChip("U10").putInput("D", getChip("U118" + type).getOutput(type));
                     break;
                 case 1:
-                    getChip("U10").putOutput("ChipSelect", (byte)0);
-                    getChip("U11").putOutput("ChipSelect", (byte)1);
-                    getChip("U12").putOutput("ChipSelect", (byte)0);
-                    getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U11").putOutput("D", getChip("U118" + type).getOutput(type));
+                    getChip("U10").putInput("ChipSelect", (byte)0);
+                    getChip("U11").putInput("ChipSelect", (byte)1);
+                    getChip("U12").putInput("ChipSelect", (byte)0);
+                    getChip("U13").putInput("ChipSelect", (byte)0);
+                    getChip("U11").putInput("D", getChip("U118" + type).getOutput(type));
                     break;
                 case 2:
-                    getChip("U10").putOutput("ChipSelect", (byte)0);
-                    getChip("U11").putOutput("ChipSelect", (byte)0);
-                    getChip("U12").putOutput("ChipSelect", (byte)1);
-                    getChip("U13").putOutput("ChipSelect", (byte)0);
-                    getChip("U12").putOutput("D", getChip("U118" + type).getOutput("A"));
+                    getChip("U10").putInput("ChipSelect", (byte)0);
+                    getChip("U11").putInput("ChipSelect", (byte)0);
+                    getChip("U12").putInput("ChipSelect", (byte)1);
+                    getChip("U13").putInput("ChipSelect", (byte)0);
+                    getChip("U12").putInput("D", getChip("U118" + type).getOutput(type));
                     break;
                 case 3:
-                    getChip("U13").putOutput("ChipSelect", (byte)1);
-                    getChip("U13").putOutput("D", getChip("U118" + type).getOutput("A"));
+                    getChip("U10").putInput("ChipSelect", (byte)0);
+                    getChip("U11").putInput("ChipSelect", (byte)0);
+                    getChip("U12").putInput("ChipSelect", (byte)0);
+                    getChip("U13").putInput("ChipSelect", (byte)1);
+                    getChip("U13").putInput("D", getChip("U118" + type).getOutput(type));
                     break;
             }
+            putInput("OutputEnable" + type, (byte) 0);
         }
     }
 }

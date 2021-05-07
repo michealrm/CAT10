@@ -8,11 +8,12 @@ import static org.cat10.minicpu.ChipManager.getChip;
 
 /**
  * Inputs:
- * getInput("MemAddr"), bottom 12 bits from 4-1 MUX in instruction circuit
- * getInput("ChipSelect")
+ * getInput("ChipSelect"), Ex: 0x1000, so if this is the 2nd chip ChipSelect would be 1
+ * getChip("U116").getOutput("MemAddrLower"), we use the upper 12 bits from 4-1 MUX in instruction circuit
+ * getChip("U116").getOutput("MemAddrUpper")
  *
  * Outputs
- * getChip("U220").getOutput("8BitDataLine")
+ * getChip("U220").getOutput("8BitDataLine"), for reading
  */
 public class U215_4KEPROM extends Chip {
 
@@ -28,14 +29,20 @@ public class U215_4KEPROM extends Chip {
         readonly = ByteBuffer.wrap(memory);
         readonly.asReadOnlyBuffer();
 
-        putInput("MemAddr", (byte) 0);
         putInput("ChipSelect", (byte) 0);
     }
 
     @Override
     public void evaluateOut() {
-        if(getInput("ChipSelect") != 0)
-            getChip("U220").putOutput("8BitDataBus", readonly.get((getInput("MemAddrLower") & 0xFF) << 4 | getInput("MemAddrUpper")));
+        if(getInput("ChipSelect") != 0) { // If this chip is selected
+            // EPROM is readonly, so we don't need to check for ReadWrite control line from U500 instruction decode
+
+            // We effectively mask 0x0FFF, where F would be a selected 4 bits, then we take the value at that
+            // addr/index and put it on U220 writing MUX, which U221 T-Gate takes input from and puts out on
+            // the MEM data bus
+            short index = (short) (((getChip("U116").getOutput("MemAddrLower") & 0xF) << 8 | getChip("U116").getOutput("MemAddrUpper")) & 0xFFF);
+            getChip("U220").putOutput("8BitDataBus", readonly.get(index));
+        }
     }
 }
 
