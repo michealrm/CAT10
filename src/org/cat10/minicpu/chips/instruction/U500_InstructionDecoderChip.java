@@ -19,7 +19,9 @@ public class U500_InstructionDecoderChip extends Chip {
     boolean isNewInstruction = true;
     boolean readingMemory = true;
     boolean isOpcode = false; // MEM_1 contains opcode that has already been read from memory using isNewInstruction
-                              // in the previous cycle
+    // in the previous cycle
+    boolean onCycleTwo = false;
+
     byte opCode = 0;
 
     byte regOperand1;
@@ -159,7 +161,15 @@ public class U500_InstructionDecoderChip extends Chip {
                                 break;
                             case (byte)0x11:
                                 opCode = (byte)0x11;
-                                putOutput("InstLen", (byte) 2); // To increment IP to next instruction
+                                putOutput("InstLen", (byte) 3); // To increment IP to next instruction
+                                break;
+                            case (byte)0x12:
+                                opCode = (byte)0x12;
+                                putOutput("InstLen", (byte) 4); // To increment IP to next instruction
+                                break;
+                            case (byte)0x13:
+                                opCode = (byte)0x13;
+                                putOutput("InstLen", (byte) 4); // To increment IP to next instruction
                                 break;
                             case (byte)0xD6:
                                 opCode = (byte)0xD6;
@@ -215,6 +225,7 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 isNewInstruction = true;
                         }
+
                     }
                 }
                 // If we're not reading memory we're either classifying opcode or processing instruction
@@ -233,16 +244,21 @@ public class U500_InstructionDecoderChip extends Chip {
                                 getChip("U112").putInput("sel", regOperand1);
                                 getChip("U113").putInput("sel", regOperand2);
                                 getChip("U111").putInput("sel", (byte) 0);
+                                putOutput("ALUAdderCarryIn", (byte) 0); //Add = 0 Sub = 1
                                 break;
-                            case (byte) 0x11://BROKEN TODO: UNDONE
+                            case (byte) 0x11:
                                 // addc R8, $HH
                                 regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
-                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
-                                putOutput("SelA", getInput("MEM_3"));
+                                //regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                                byte intConstant = getInput("MEM_3");
+                                putOutput("INSTUpper", getInput("MEM_3"));
                                 getChip("U112").putInput("sel", regOperand1);
-                                getChip("U113").putInput("sel", regOperand2);
+                                getChip("U113").putInput("sel", (byte) 6);
+                                //getChip("U113").putInput("sel", regOperand2);
                                 getChip("U111").putInput("sel", (byte) 0);
+                                putOutput("ALUAdderCarryIn", (byte) 0); //Add = 0 Sub = 1
                                 break;
+
                             case (byte) 0xD6:
                                 //jlo aka Jump If Lower
                                 if ((getChip("U120").getOutput("FlagsOut") & 0x8) != 0){
@@ -295,7 +311,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 // First cycle
                                 regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
                                 //regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
-                                byte intConstant = getInput("MEM_3");
+                                intConstant = getInput("MEM_3");
 
                                 // Select register operand 2 to be selected in U112 MUX to DATALower bus
                                 putOutput("INSTLower", intConstant);
@@ -305,6 +321,9 @@ public class U500_InstructionDecoderChip extends Chip {
                                 isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
                                 opCode = 0;
                                 break;
+                            case (byte) 0x12:
+                                //Addc R8,[$MMMM]
+                                putOutput("ALUAdderCarryIn", (byte) 0); //Add = 0 Sub = 1
                             case (byte) 0x32:
                                 // cmp R8, [$MMMM]
 
@@ -324,6 +343,16 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 // Wait till [$MMMM] is read and put on MEM bus by T-Gate then in Cycle 2 we put in reg
                                 break;
+                            case (byte) 0x13:
+                                // addc [$MMMM], R8
+                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+
+                                putOutput("INSTLower", getInput("MEM_3"));
+                                putOutput("INSTUpper", getInput("MEM_4"));
+
+                                getChip("U113").putInput("sel", regOperand2);
+                                break;
+
                             case (byte) 0x33:
                                 // cmp [$MMMM], R8
                             case (byte) 0x83:
@@ -369,7 +398,8 @@ public class U500_InstructionDecoderChip extends Chip {
                                 putOutput("InstLen", (byte)1); // Skip the no-op
                         }
                         isOpcode = false;
-                    } else {
+                        onCycleTwo = true;
+                    } else if (onCycleTwo){
                         // Second and further cycles
                         regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
 
@@ -441,21 +471,49 @@ public class U500_InstructionDecoderChip extends Chip {
                             isNewInstruction = true;
                             opCode = 0;
                         }
+                        else if(opCode == (byte) 0x12) {
+                            getChip("U112").putInput("sel", regOperand1); // Select regOperand1
+                            getChip("U113").putInput("sel", (byte) 4);
+                            getChip("U111").putInput("sel", (byte) 0);
+                            onCycleTwo = false;
+                        }
+                        else if(opCode == (byte) 0x13) {
+                            getChip("U112").putInput("sel", (byte) 4); // Select regOperand2
+                            getChip("U113").putInput("sel", regOperand2);
+                            getChip("U111").putInput("sel", (byte) 0);
+                            putOutput("ALUAdderCarryIn", (byte) 0); //Add = 0 Sub = 1
+                        }
                         // Need to handle default case here if isOpcode=false
                         else {
                             isNewInstruction = true;
                             putOutput("InstLen", (byte)1);
+                        }
+                        onCycleTwo = false;
+                    } else {
+                        if (opCode == (byte) 0x12) {
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        } else if (opCode == (byte) 0x13) {
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 1); // Write
+                            getChip("U220").putInput("sel", (byte) 2);
+                            isNewInstruction = true;
+                            opCode = 0;
                         }
                     }
                 }
             }
         } finally {
             if(CPU.DEBUG_MEMFETCH);
-                //System.out.printf("\nMEMORY: MEM_1=x%02X | (MEM_2=x%02X) | (MEM_3=x%02X) | (MEM_4=x%02X) |\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4" ));
-            	//System.out.printf("\nMEMORY: \n\tMEM_1 = x%02X 					      |", getInput("MEM_1"));
-            	//System.out.printf("\n\tMEM_2 = x%02X					      |", getInput("MEM_2"));
-            	//System.out.printf("\n\tMEM_3 = x%02X 					      |", getInput("MEM_3"));
-                //System.out.println("\n--------------------------------------------------------------|");
+            //System.out.printf("\nMEMORY: MEM_1=x%02X | (MEM_2=x%02X) | (MEM_3=x%02X) | (MEM_4=x%02X) |\n", getInput("MEM_1"), getInput("MEM_2"), getInput("MEM_3"), getInput("MEM_4" ));
+            //System.out.printf("\nMEMORY: \n\tMEM_1 = x%02X 					      |", getInput("MEM_1"));
+            //System.out.printf("\n\tMEM_2 = x%02X					      |", getInput("MEM_2"));
+            //System.out.printf("\n\tMEM_3 = x%02X 					      |", getInput("MEM_3"));
+            //System.out.println("\n--------------------------------------------------------------|");
         }
     }
 
