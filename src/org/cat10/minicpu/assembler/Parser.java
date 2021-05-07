@@ -106,7 +106,8 @@ public class Parser {
                         byte cbMemSel = (byte)((callbackAddr >> 12) & 0xF);
                         short cbIndex = (short)(callbackAddr & 0xFFF);
 
-                        if(mems[cbMemSel][cbIndex] != (byte) 0x10) {
+                        // Not an absolute jump
+                        if(mems[cbMemSel][cbIndex] != (byte) 0xB9) {
                             // Use offset for conditional jumps
                             addr = (short)(addr - (callbackAddr + 3)); // Added 3 to get address of next instruction
                         }
@@ -173,7 +174,7 @@ public class Parser {
                 case "JMP":
                     scan.getNext();
                     if(scan.currentToken.classif == Classif.INTCONST) {
-                        short opConst = (short)(Integer.parseInt(scan.currentToken.tokenStr, 16)); // Bad, no error checking
+                        short opConst = (short)(Integer.parseInt(scan.currentToken.tokenStr.substring(1), 16)); // Bad, no error checking
                         writeBytes((byte) 0xB9, (byte)((opConst & 0xFF00) >> 8), (byte)(opConst & 0xFF));
                     }
                     else if(scan.currentToken.classif == Classif.IDENTIFIER) {

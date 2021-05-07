@@ -1,0 +1,10 @@
+*=$8000
+mov r3, $aa
+jmp lbl_to9000
+
+*=$9000
+lbl_To9000:
+mov r0, $fe
+
+*=$F000
+jmp $8000

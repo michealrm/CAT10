@@ -205,6 +205,10 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = (byte)0xA0;
                                 putOutput("InstLen", (byte) 2);
                                 break;
+                            case (byte) 0xB9:
+                                opCode = (byte)0xB9;
+                                putOutput("InstLen", (byte) 3);
+                                break;
                             default:
                                 opCode = (byte)0;
                                 putOutput("InstLen", (byte)1); // To increment IP to next instruction
@@ -345,6 +349,21 @@ public class U500_InstructionDecoderChip extends Chip {
                                 getChip("U116").putInput("sel", (byte) 1);
                                 putOutput("ReadWrite", (byte) 0);
                                 break;
+                            case (byte) 0xB9:
+                                putOutput("INSTLower", getInput("MEM_2"));
+                                putOutput("INSTUpper", getInput("MEM_3"));
+
+                                getChip("U115").putInput("sel", (byte) 1);
+
+                                getChip("U15").putInput("ChipSelect", (byte) 1);
+
+                                putOutput("MemFetchLower", getInput("MEM_2"));
+                                putOutput("MemFetchUpper", getInput("MEM_3"));
+
+                                isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                                opCode = 0;
+                                break;
+
                             default:
                                 isNewInstruction = true;
                                 putOutput("InstLen", (byte)1); // Skip the no-op
