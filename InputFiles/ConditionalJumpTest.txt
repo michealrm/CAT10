@@ -8,3 +8,7 @@ mov r3, $1a
 mov r2, $02
 lbl_Forward:
 mov r3, r1
+cmp r3, r1
+cmp r2, $1a
+cmp R3, [$a1b2]
+cmp [$a1b2], r1

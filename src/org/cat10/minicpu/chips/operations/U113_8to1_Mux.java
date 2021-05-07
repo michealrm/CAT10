@@ -50,7 +50,7 @@ public class U113_8to1_Mux extends Chip {
                 putOutput("DATAUpper", getChip("U110").getOutput("FLAGS"));
                 break;
             case 6:
-                putOutput("DATAUpper", getChip("U500").getOutput("INST"));
+                putOutput("DATAUpper", getChip("U500").getOutput("INSTUpper"));
                 break;
             case 7:
                 putOutput("DATAUpper", getChip("U15").getOutput("IP"));
