@@ -174,10 +174,10 @@ public class Parser {
                     scan.getNext();
                     if(scan.currentToken.classif == Classif.INTCONST) {
                         short opConst = (short)(Integer.parseInt(scan.currentToken.tokenStr, 16)); // Bad, no error checking
-                        writeBytes((byte) 0x10, (byte)((opConst & 0xFF00) >> 8), (byte)(opConst & 0xFF));
+                        writeBytes((byte) 0xB9, (byte)((opConst & 0xFF00) >> 8), (byte)(opConst & 0xFF));
                     }
                     else if(scan.currentToken.classif == Classif.IDENTIFIER) {
-                        writeBytes((byte) 0x10); // So we're at where we'd put the 2 byte address
+                        writeBytes((byte) 0xB9); // So we're at where we'd put the 2 byte address
                         String labelName = scan.currentToken.tokenStr;
                         short labelLocationOrEmpty = findLabel(labelName);
                         writeBytes((byte)((labelLocationOrEmpty & 0xFF00) >> 8), (byte)(labelLocationOrEmpty & 0xFF));
@@ -187,17 +187,16 @@ public class Parser {
                     }
                     break;
 
-                case "JE":
+                case "JLO":
+                case "JHS":
+                case "JEQ":
                 case "JNE":
-                case "JG":
-                case "JGE":
-                case "JL":
-                case "JLE":
-                case "JA":
-                case "JAE":
-                case "JB":
-                case "JBE":
+                case "JMI":
+                case "JPL":
                     ConditionalJumpInstructions();
+                    break;
+                case "NOP":
+                    writeBytes((byte) 0xE0);
                     break;
                 case "*":
                     // *=$MMMM
@@ -223,35 +222,23 @@ public class Parser {
     private void ConditionalJumpInstructions() throws Exception {
         byte opCode = (byte) 0;
         switch(scan.currentToken.tokenStr) {
-            case "JE":
-                opCode = (byte) 0x11;
+            case "JLO":
+                opCode = (byte) 0xD6;
+                break;
+            case "JHS":
+                opCode = (byte) 0xD7;
+                break;
+            case "JEQ":
+                opCode = (byte) 0xD8;
                 break;
             case "JNE":
-                opCode = (byte) 0x12;
+                opCode = (byte) 0xD9;
                 break;
-            case "JG":
-                opCode = (byte) 0x13;
+            case "JMI":
+                opCode = (byte) 0xDA;
                 break;
-            case "JGE":
-                opCode = (byte) 0x14;
-                break;
-            case "JL":
-                opCode = (byte) 0x15;
-                break;
-            case "JLE":
-                opCode = (byte) 0x16;
-                break;
-            case "JA":
-                opCode = (byte) 0x17;
-                break;
-            case "JAE":
-                opCode = (byte) 0x18;
-                break;
-            case "JB":
-                opCode = (byte) 0x19;
-                break;
-            case "JBE":
-                opCode = (byte) 0x1A;
+            case "JPL":
+                opCode = (byte) 0xDB;
                 break;
         }
 

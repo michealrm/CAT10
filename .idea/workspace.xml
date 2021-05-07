@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U104_NOT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U104_NOT.java" afterDir="false" />
-    </list>
+    <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,7 +47,7 @@
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.cat10.minicpu.Main" />
       <module name="CAT10-1" />
-      <option name="PROGRAM_PARAMETERS" value="InputFiles/NotTest.txt" />
+      <option name="PROGRAM_PARAMETERS" value="InputFiles/ConditionalJumpTest.txt" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.cat10.minicpu.*" />
@@ -92,25 +88,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>53</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>244</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>346</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
         <watch expression="((U114_2to4_Demux)this).inputs" custom="org.cat10.minicpu.chips.operations.U114_2to4_Demux" />

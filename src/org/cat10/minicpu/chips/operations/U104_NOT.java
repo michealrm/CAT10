@@ -1,6 +1,7 @@
 package org.cat10.minicpu.chips.operations;
 
 import org.cat10.minicpu.chips.Chip;
+import org.cat10.minicpu.util.CAT10Util;
 
 import static org.cat10.minicpu.ChipManager.getChip;
 import static org.cat10.minicpu.util.CAT10Util.Not;
@@ -31,6 +32,8 @@ public class U104_NOT extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("NOT", NotByte(getChip("U113").getOutput("DATAUpper")));
+		byte not = NotByte(getChip("U113").getOutput("DATAUpper"));
+		putOutput("NOT", not);
+		putOutput("FlagsOut", CAT10Util.getSignAndZeroFlag(not));
 	}
 }

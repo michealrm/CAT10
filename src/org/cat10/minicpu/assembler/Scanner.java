@@ -260,7 +260,7 @@ public class Scanner {
 
     private boolean startsWithMnemonic(String str) {
         return containsIn(str, "MOV", "ADDC", "SUBB", "CMP", "NOT", "AND", "OR", "XOR", "PUSH", "POP", "JMP",
-                                    "JE", "JNE", "JG", "JGE", "JL", "JLE", "JA", "JAE", "JB", "JBE");
+                                    "JLO", "JHS", "JEQ", "JNE", "JMI", "JPL", "NOP");
     }
 
     private boolean isWhitespace(Token token) {
