@@ -1,0 +1,10 @@
+*=$F000
+mov r1, $03
+addc r2, r1
+addc r2, $f3
+
+mov r3, $01
+mov [$a1b2], $05
+addc r3, [$a1b2]
+addc [$a1b2], r1
+mov r0, [$a1b2]

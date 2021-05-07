@@ -19,14 +19,14 @@ public class U107_AddSub extends Chip {
 	public U107_AddSub() {
 		super("U107");
 		putInput("CarryIn", (byte) 0);
-		putOutput("IPIncLower", (byte) 0);
-		putOutput("IPIncUpper", (byte) 0);
+		putOutput("SPSumLower", (byte) 0);
+		putOutput("SPSumUpper", (byte) 0);
 	}
 
 	@Override
 	public void evaluateOut() {
-		CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte(getInput("CarryIn"), getChip("U14").getOutput("SPLower"), (byte) 2);
-		CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U14").getOutput("SPUpper"), upperByteOutput.carryOut);
+		CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte(getInput("CarryIn"), getChip("U14").getOutput("SPUpper"), (byte) 2);
+		CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U14").getOutput("SPLower"), upperByteOutput.carryOut);
 		putOutput("SPSumLower", lowerByteOutput.sum);
 		putOutput("SPSumUpper", upperByteOutput.sum);
 	}
