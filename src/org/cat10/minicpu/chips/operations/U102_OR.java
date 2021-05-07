@@ -1,6 +1,7 @@
 package org.cat10.minicpu.chips.operations;
 
 import org.cat10.minicpu.chips.Chip;
+import org.cat10.minicpu.util.CAT10Util;
 
 import static org.cat10.minicpu.ChipManager.getChip;
 
@@ -29,6 +30,8 @@ public class U102_OR extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("OR", (byte)(getChip("U112").getOutput("DATALower") | getChip("U113").getOutput("DATAUpper")));
+		byte or = (byte)(getChip("U112").getOutput("DATALower") | getChip("U113").getOutput("DATAUpper"));
+		putOutput("OR", or);
+		putOutput("FlagsOut", CAT10Util.getSignAndZeroFlag(or));
 	}
 }

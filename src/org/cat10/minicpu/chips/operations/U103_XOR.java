@@ -1,6 +1,7 @@
 package org.cat10.minicpu.chips.operations;
 
 import org.cat10.minicpu.chips.Chip;
+import org.cat10.minicpu.util.CAT10Util;
 
 import static org.cat10.minicpu.ChipManager.getChip;
 
@@ -21,7 +22,9 @@ public class U103_XOR extends Chip{
 
 	@Override
 	public void evaluateOut() {
-		putOutput("XOR", (byte)(getChip("U112").getOutput("DATALower") ^ getChip("U113").getOutput("DATAUpper")));
+		byte xor = (byte)(getChip("U112").getOutput("DATALower") ^ getChip("U113").getOutput("DATAUpper"));
+		putOutput("XOR", xor);
+		putOutput("FlagsOut", CAT10Util.getSignAndZeroFlag(xor));
 	}
 
 	/* Output Xor(0-7) to U111 */

@@ -273,7 +273,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 putOutput("INSTLower", getInput("MEM_3"));
                                 putOutput("INSTUpper", getInput("MEM_4"));
 
-                                getChip("U116").putInput("sel", (byte) 2);
+                                getChip("U16").putInput("sel", (byte) 2);
 
                                 putOutput("ReadWrite", (byte) 0); // Read
 
