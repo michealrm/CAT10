@@ -86,4 +86,11 @@ public class CAT10Util {
         return out;
     }
 
+    public static byte getSignAndZeroFlag(byte val) {
+        byte out = (byte) 0;
+        out |= val == 0 ? (byte) 1 : (byte) 0; // Set zero flag 0000 000X
+        out |= ((val & 0x80) != 0) ? (byte) 1 << 2 : (byte) 0; // Set sign flag 0000 0X00
+        return out;
+    }
+
 }
