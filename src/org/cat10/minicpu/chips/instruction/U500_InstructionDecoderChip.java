@@ -159,6 +159,14 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = (byte)0x31;
                                 putOutput("InstLen", (byte) 2); // To increment IP to next instruction
                                 break;
+                            case (byte)0x40:
+                                opCode = (byte)0x40;
+                                putOutput("InstLen", (byte) 2);
+                                break;
+                            case(byte)0x43:
+                                opCode = (byte)0x43;
+                                putOutput("InstLen", (byte) 3);
+                                break;
                             case (byte)0x80:
                                 opCode = (byte)0x80;
                                 putOutput("InstLen", (byte) 2); // To increment IP to next instruction
@@ -232,6 +240,26 @@ public class U500_InstructionDecoderChip extends Chip {
                                 opCode = 0;
                                 break;
 
+                            case (byte) 0x40:
+                                // not r8
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                getChip("U113").putInput("sel", regOperand1);
+                                getChip("U111").putInput("sel", (byte) 4);
+                                break;
+                            case (byte) 0x43:
+                                // not [$MMMM]
+                                // 0x43 [mem lower] [mem upper]
+
+                                // The idea is we put $MMMM on INST, R/W=R, [$MMMM] is on MEM bus, sel MEM to be put in reg
+                                putOutput("INSTLower", getInput("MEM_2"));
+                                putOutput("INSTUpper", getInput("MEM_3"));
+
+                                getChip("U116").putInput("sel", (byte) 2);
+
+                                putOutput("ReadWrite", (byte) 0); // Read
+
+                                // Wait till [$MMMM] is read and put on MEM bus by T-Gate then in Cycle 2 we put in reg
+                                break;
                             case (byte) 0x80:
                                 // mov R8, R8
                                 // First cycle
@@ -273,7 +301,7 @@ public class U500_InstructionDecoderChip extends Chip {
                                 putOutput("INSTLower", getInput("MEM_3"));
                                 putOutput("INSTUpper", getInput("MEM_4"));
 
-                                getChip("U16").putInput("sel", (byte) 2);
+                                getChip("U116").putInput("sel", (byte) 2);
 
                                 putOutput("ReadWrite", (byte) 0); // Read
 
@@ -314,7 +342,20 @@ public class U500_InstructionDecoderChip extends Chip {
                         regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
 
                         // Second cycle of 0x80 MOV R8,R8
-                        if (opCode == (byte) 0x80) {
+                        if (opCode == (byte) 0x40) {
+                            // not r8
+                            getChip("U118A").putInput("sel", (byte) 3);
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                            opCode = 0;
+                        }
+                        else if(opCode == (byte) 0x43) {
+                            getChip("U118A").putInput("sel", (byte) 5);
+
+                        }
+                        else if(opCode == (byte) 0x80) {
                             getChip("U118A").putInput("sel", (byte) 0); // Select DATA
                             getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
                             getChip("U114").putInput("OutputEnableA", (byte) 1);
