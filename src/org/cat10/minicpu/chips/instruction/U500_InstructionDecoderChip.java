@@ -151,6 +151,14 @@ public class U500_InstructionDecoderChip extends Chip {
 
                         getChip("U115").putInput("sel", (byte) 2); // Select IPInc for IPNew
                         switch(getInput("MEM_1")) {
+                            case (byte)0x30:
+                                opCode = (byte)0x30;
+                                putOutput("InstLen", (byte) 2); // To increment IP to next instruction
+                                break;
+                            case (byte)0x31:
+                                opCode = (byte)0x31;
+                                putOutput("InstLen", (byte) 2); // To increment IP to next instruction
+                                break;
                             case (byte)0x80:
                                 opCode = (byte)0x80;
                                 putOutput("InstLen", (byte) 2); // To increment IP to next instruction
@@ -158,6 +166,14 @@ public class U500_InstructionDecoderChip extends Chip {
                             case (byte)0x81:
                                 opCode = (byte)0x81;
                                 putOutput("InstLen", (byte) 3); // To increment IP to next instruction
+                                break;
+                            case (byte)0x32:
+                                opCode = (byte)0x32;
+                                putOutput("InstLen", (byte) 4); // To increment IP to next instruction
+                                break;
+                            case (byte)0x33:
+                                opCode = (byte)0x33;
+                                putOutput("InstLen", (byte) 4); // To increment IP to next instruction
                                 break;
                             case (byte)0x82:
                                 opCode = (byte)0x82;
@@ -192,6 +208,30 @@ public class U500_InstructionDecoderChip extends Chip {
                     if (isOpcode) {
                         // Setup and first cycle of instructions
                         switch (opCode) {
+                            case (byte) 0x30:
+                                // cmp R8, R8
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                                getChip("U112").putInput("sel", regOperand1);
+                                getChip("U113").putInput("sel", regOperand2);
+                                getChip("U120").putInput("sel", (byte) 0);
+                                getChip("U110").putInput("ChipSelect", (byte) 1);
+                                isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                                opCode = 0;
+                                break;
+                            case (byte) 0x31:
+                                // cmp R8, $HH
+                                regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                                regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                                putOutput("INSTLower", getInput("MEM_3"));
+                                getChip("U112").putInput("sel", regOperand1);
+                                getChip("U113").putInput("sel", (byte) 6);
+                                getChip("U120").putInput("sel", (byte) 0);
+                                getChip("U110").putInput("ChipSelect", (byte) 1);
+                                isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
+                                opCode = 0;
+                                break;
+
                             case (byte) 0x80:
                                 // mov R8, R8
                                 // First cycle
@@ -220,6 +260,9 @@ public class U500_InstructionDecoderChip extends Chip {
                                 isNewInstruction = true; // IP is already on next instruction. We'll read memory later to inc IP
                                 opCode = 0;
                                 break;
+                            case (byte) 0x32:
+                                // cmp R8, [$MMMM]
+
                             case (byte) 0x82:
                                 // mov R8, [$MMMM]
                                 // 0x82 [register byte] [mem lower] [mem upper]
@@ -236,6 +279,8 @@ public class U500_InstructionDecoderChip extends Chip {
 
                                 // Wait till [$MMMM] is read and put on MEM bus by T-Gate then in Cycle 2 we put in reg
                                 break;
+                            case (byte) 0x33:
+                                // cmp [$MMMM], R8
                             case (byte) 0x83:
                                 // mov [$MMMM], R8
                                 // 0x82 [register byte] [mem lower] [mem upper]

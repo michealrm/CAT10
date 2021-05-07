@@ -18,18 +18,28 @@ public class U120_2to1_Mux extends Chip{
 	public U120_2to1_Mux() {
 		super("U120");
 		putInput("sel", (byte) 0);
-		putInput("ALU", (byte) 0);
-		putInput("FLAGS", (byte) 0);
+		//putInput("ALU", (byte) 0);
+		putOutput("FlagsOut", (byte) 0);
+
 	}
 
 	@Override
 	public void evaluateOut() {
-		switch(getInput("FLAGS")) {
+		switch(getInput("sel")) {
 			case 0:
-				putOutput("FlagsOut", getChip("U100").getOutput("FLAGS"));
+				putOutput("FlagsOut", getChip("U100").getOutput("FlagsOut"));
 				break;
 			case 1:
-				putOutput("FlagsOut", getChip("U100").getOutput("FLAGS"));
+				putOutput("FlagsOut", getChip("U101").getOutput("AND"));
+				break;
+			case 2:
+				putOutput("FlagsOut", getChip("U102").getOutput("OR"));
+				break;
+			case 3:
+				putOutput("FlagsOut", getChip("U103").getOutput("XOR"));
+				break;
+			case 4:
+				putOutput("FlagsOut", getChip("U104").getOutput("NOT"));
 				break;
 		}
 		
