@@ -74,6 +74,18 @@ public class U500_InstructionDecoderChip extends Chip {
         instLens.put((byte) 0xA0, (byte) 2); //Pop R8
         instLens.put((byte) 0xB9, (byte) 3); //jmp $MMMM
         instLens.put((byte) 0xD6, (byte) 2); //Jlo (jcs)
+        instLens.put((byte) 0x50, (byte) 2); //AND R8,R8
+        instLens.put((byte) 0x51, (byte) 3); //AND R8,$HH
+        instLens.put((byte) 0x52, (byte) 4); //AND R8,[$MMMM]
+        instLens.put((byte) 0x53, (byte) 4); //AND [$MMMM],R8
+        instLens.put((byte) 0x60, (byte) 2); //OR R8,R8
+        instLens.put((byte) 0x61, (byte) 3); //OR R8,$HH
+        instLens.put((byte) 0x62, (byte) 4); //OR R8,[$MMMM]
+        instLens.put((byte) 0x63, (byte) 4); //OR [$MMMM],R8
+        instLens.put((byte) 0x70, (byte) 2); //XOR R8,R8
+        instLens.put((byte) 0x71, (byte) 3); //XOR R8,$HH
+        instLens.put((byte) 0x72, (byte) 4); //XOR R8,[$MMMM]
+        instLens.put((byte) 0x73, (byte) 4); //XOR [$MMMM],R8
     }
 
     @Override
@@ -814,7 +826,8 @@ public class U500_InstructionDecoderChip extends Chip {
                             regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
                             putOutput("INSTLower", getInput("MEM_3"));
                             putOutput("INSTUpper", getInput("MEM_4"));
-                            getChip("U116", putInput("sel", (byte) );)
+
+                            // TODO: Not done
                         }
                         break;
                     case (byte) 0x80:

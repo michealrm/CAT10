@@ -1,7 +1,9 @@
 *=$F000
-mov r1, r2
-mov r12, r32
+
 mov r2, $FF
-mov r03, $BBBB
-mov r2, [$AAAA]
-mov [$1188], r3
+
+mov r1, r2
+
+mov [$abcd], r2
+
+mov r3, [$abcd]

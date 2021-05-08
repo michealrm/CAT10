@@ -1,0 +1,11 @@
+*=$F000
+addc r0, $FF
+addc r1, $FF
+addc r2, $FF
+addc r3, $FF
+
+subb r1, $01
+
+subb r2, r1
+
+subb [$abcd], r2
