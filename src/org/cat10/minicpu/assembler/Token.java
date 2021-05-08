@@ -16,6 +16,7 @@ public class Token {
     public Token(String value)
     {
         this.tokenStr = value;
+        this.tokenSB = new StringBuffer(value);
     }
     public Token()
     {

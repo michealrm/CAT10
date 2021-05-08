@@ -20,7 +20,6 @@ public class U104_NOT extends Chip{
 	/*
 	 * NOT
 	 * Inputs
-	 * getChip("U112").getOutput("DATALower")
 	 * getChip("U113").getOutput("DATAUpper")
 	 * Outputs
 	 * getOutput("NOT")

@@ -1,3 +1,7 @@
 *=$F000
 mov r1, $c7
 not r1
+
+mov [$abcd], r1
+not [$abcd]
+mov r3, [$abcd]

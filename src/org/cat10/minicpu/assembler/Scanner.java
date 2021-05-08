@@ -129,7 +129,7 @@ public class Scanner {
     private boolean continuesToken(Token token, char c) throws Exception {
         Token copy = new Token(token.tokenSB.toString() + c); // Kinda defeats the purpose of a SB, at least here
         setClassification(copy);
-        if(copy.classif != Classif.EMPTY && copy.classif != token.classif) {
+        if(copy.classif != Classif.EMPTY && copy.classif != token.classif && !eqMnemonic(token.tokenSB.toString())) {
             token.classif = copy.classif;
         }
 
@@ -255,6 +255,18 @@ public class Scanner {
         ret[0] = r;
         ret[1] = c;
         return ret;
+    }
+
+    private boolean eqMnemonic(String str) {
+        return equalsIn(str, "MOV", "ADDC", "SUBB", "CMP", "NOT", "AND", "OR", "XOR", "PUSH", "POP", "JMP",
+                "JLO", "JHS", "JEQ", "JNE", "JMI", "JPL", "NOP");
+    }
+
+    private boolean equalsIn(String str, String... arr) {
+        for(String a : arr)
+            if(str.equals(a))
+                return true;
+        return false;
     }
 
     private boolean startsWithMnemonic(String str) {

@@ -777,7 +777,7 @@ public class Parser {
      * @param fmt The error message to be printed
      */
     private void errorWithCurrent(String fmt) throws Exception {
-        error("Read \"%s\", " + fmt, scan.currentToken.tokenStr);
+        error("Read \"%s\" with type %s, " + fmt, scan.currentToken.tokenStr, scan.currentToken.classif);
     }
 
     private void errorWithCurrent(String fmt, Object... varArgs) throws Exception {

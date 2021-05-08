@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/InputFiles/AddMem.txt" beforeDir="false" afterPath="$PROJECT_DIR$/InputFiles/AddMem.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputFiles/ConditionalJumpTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/InputFiles/ConditionalJumpTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Scanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Scanner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U104_NOT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U104_NOT.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +75,7 @@
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.cat10.minicpu.Main" />
       <module name="CAT10-1" />
-      <option name="PROGRAM_PARAMETERS" value="InputFiles/AddMem.txt" />
+      <option name="PROGRAM_PARAMETERS" value="InputFiles/NotTest.txt" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.cat10.minicpu.*" />
@@ -129,6 +132,26 @@
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java</url>
           <line>92</line>
           <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/assembler/Parser.java</url>
+          <line>100</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
+          <line>628</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
+          <line>405</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
+          <line>395</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

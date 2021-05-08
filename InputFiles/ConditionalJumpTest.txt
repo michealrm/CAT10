@@ -1,19 +1,8 @@
+*=$5000
+start:
+mov r2, $DE
 *=$F000
-lbl_Test:
-mov r0, r1
-mov r3, r2
-jmp lbl_Forward
-mov r3, $1a
-mov r2, $02
-lbl_Forward:
-mov r3, r1
-cmp r3, r1
-cmp r2, $1a
-cmp r3, [$a1b2]
-cmp [$a1b2], r1
-mov r0, $01
-mov r1, $02
-jlo lbl_Test
-mov r1, $05
-addc r2, r1
-addc r2, $f3
+start:
+mov r1, $aa
+cmp r0, r1
+jlo start
