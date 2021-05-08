@@ -24,6 +24,6 @@ public class U100_AddSub extends Chip {
 	public void evaluateOut() {
 		CAT10Util.AdderOutput out = CAT10Util.fullAdderByte(getChip("U500").getOutput("ALUAdderCarryIn"), getChip("U112").getOutput("DATALower"), getChip("U113").getOutput("DATAUpper"));
 		putOutput("SUM", out.sum);
-		putOutput("FlagsOut", out.flags);
+		putOutput("FlagsOut", out.carryFlag);
 	}
 }

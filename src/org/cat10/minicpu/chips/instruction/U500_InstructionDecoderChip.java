@@ -161,7 +161,7 @@ public class U500_InstructionDecoderChip extends Chip {
                 // Increment next valid instruction since we just set memory from MEM bus
                 CAT10Util.AdderOutput memFetchAddUpper = CAT10Util.fullAdderByte((byte) 0, getOutput("MemFetchUpper"), (byte)1);
                 putOutput("MemFetchUpper", memFetchAddUpper.sum);
-                putOutput("MemFetchLower", (byte)(getOutput("MemFetchLower") + memFetchAddUpper.carryOut));
+                putOutput("MemFetchLower", (byte)(getOutput("MemFetchLower") + memFetchAddUpper.carryFlag));
 
                 // Increment sel to fill the next memory space
                 if (selMemMux != 3) {
@@ -512,14 +512,22 @@ public class U500_InstructionDecoderChip extends Chip {
 
                         // Cycle 1
                         if(cycle == (byte) 0) {
+                            getChip("U107").putInput("CarryIn", (byte) 0);
+                            getChip("U117").putInput("sel", (byte) 1);
+                            getChip("U14").putInput("ChipSelect", (byte) 1);
+
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1) {
+                            // Need this intermediary cycle instead of putting it into
                             regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
                             getChip("U116").putInput("sel", (byte) 1);
                             putOutput("ReadWrite", (byte) 0);
 
                             cycle++;
                         }
-                        // Cycle 2
-                        else if(cycle == (byte) 1) {
+                        else if(cycle == (byte) 2) {
                             getChip("U118A").putInput("sel", (byte) 5); // Select MEM
                             getChip("U114").putInput("SelA", regOperand1); // Select register in `regOperand1` to be destination
                             getChip("U114").putInput("OutputEnableA", (byte) 1);

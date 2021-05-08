@@ -14,6 +14,11 @@ public class AdderTest {
         testAdder(false, 0x52, 0x0, 0x52, 0x0);
         testAdder(true, 0x9A, 0x0, 0x9A, 0x0);
 
+        // Carry
+        testAdder(false, 0xFF, 0x1, 0x0, 0x1);
+
+        // Stack
+        testAdder(true, 0x0, 2, 0xFE, 1);
 
     }
 
@@ -33,6 +38,10 @@ public class AdderTest {
             System.out.printf("\tTest FAILED. Sum was %d, not %X\n", output.sum, sum);
         else
             System.out.printf("\tTest passed. Sum was %X\n", output.sum);
+        if(output.carryFlag != carry)
+            System.out.printf("\tTest FAILED. Carry was %d, not %X\n", output.carryFlag, carry);
+        else
+            System.out.printf("\tTest passed. Carry was %X\n", output.carryFlag);
         System.out.println();
     }
 

@@ -23,7 +23,7 @@ public class U106_Adder_IPRel extends Chip {
     @Override
     public void evaluateOut() {
         CAT10Util.AdderOutput upperByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncUpper"), getChip("U500").getOutput("OffsetUpper"));
-        CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncLower"), (byte) (getChip("U500").getOutput("OffsetLower") + upperByteOutput.carryOut));
+        CAT10Util.AdderOutput lowerByteOutput = CAT10Util.fullAdderByte((byte) 0, getChip("U105").getOutput("IPIncLower"), (byte) (getChip("U500").getOutput("OffsetLower") + upperByteOutput.carryFlag));
         putOutput("IPRelLower", lowerByteOutput.sum);
         putOutput("IPRelUpper", upperByteOutput.sum);
     }

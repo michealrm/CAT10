@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U105_Adder_IPInc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U105_Adder_IPInc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U106_Adder_IPRel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U106_Adder_IPRel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U100_AddSub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U100_AddSub.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/tests/AdderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/tests/AdderTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +59,20 @@
       <recent name="C:\Users\Miche\Source\CAT10\InputFiles" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.AdderTest">
+    <configuration name="AdderTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.cat10.minicpu.tests.AdderTest" />
+      <module name="CAT10-1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.cat10.minicpu.tests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.cat10.minicpu.Main" />
       <module name="CAT10-1" />
@@ -67,8 +87,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.AdderTest" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.AdderTest" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -100,19 +125,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java</url>
-          <line>54</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java</url>
-          <line>29</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java</url>
-          <line>67</line>
-          <option name="timeStamp" value="23" />
+          <line>34</line>
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
