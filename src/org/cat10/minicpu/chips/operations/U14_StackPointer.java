@@ -28,7 +28,7 @@ public class U14_StackPointer extends Chip {
     short masterNandOutput2b;
     short slaveNandOutput1a;
     short slaveNandOutput1b;
-    short slaveNandOutput2a;
+    short slaveNandOutput2a = (short) 0xC000;
     short slaveNandOutput2b;
 
     public U14_StackPointer() {
@@ -40,7 +40,8 @@ public class U14_StackPointer extends Chip {
 
     @Override
     public void evaluateOut() {
-        short newSP = (short) ((getChip("U117").getOutput("SPNewLower") << 8) | getChip("U117").getOutput("SPNewUpper"));
+        short lower = (short) (getChip("U117").getOutput("SPNewLower") << 8);
+        short newSP = (short)(lower | (getChip("U117").getOutput("SPNewUpper") & 0x00FF));
         short clock = getChip("U999").getOutput("clock");
         short notClock = Not((byte)clock);
 
@@ -56,15 +57,15 @@ public class U14_StackPointer extends Chip {
             masterNandOutput2b = Nand(masterNandOutput1b, masterNandOutput2a);
             masterNandOutput2a = Nand(masterNandOutput1a, masterNandOutput2b);
 
-            slaveNandOutput1a = Nand(masterNandOutput2a, notClock);
-            slaveNandOutput1b = Nand(notClock, masterNandOutput2b);
-            slaveNandOutput2b = Nand(slaveNandOutput2a, slaveNandOutput1b);
-            slaveNandOutput2a = Nand(slaveNandOutput1a, slaveNandOutput2b);
-
-            putOutput("SPLower", (byte) ((slaveNandOutput2a & 0xFF00) >> 8));
-            putOutput("SPUpper", (byte) (slaveNandOutput2a & 0xFF));
-
             putInput("ChipSelect", (byte) 0);
         }
+
+        slaveNandOutput1a = Nand(masterNandOutput2a, notClock);
+        slaveNandOutput1b = Nand(notClock, masterNandOutput2b);
+        slaveNandOutput2b = Nand(slaveNandOutput2a, slaveNandOutput1b);
+        slaveNandOutput2a = Nand(slaveNandOutput1a, slaveNandOutput2b);
+
+        putOutput("SPLower", (byte) ((slaveNandOutput2a & 0xFF00) >> 8));
+        putOutput("SPUpper", (byte) (slaveNandOutput2a & 0x00FF));
     }
 }

@@ -63,7 +63,7 @@ public class CAT10Util {
         if(carryIn == 1)
             b = (byte)-b;
 
-        short sum = (short)(a + b);
+        short sum = (short)((a & 0xFF) + (b & 0xFF));
         byte carry = (byte)((sum & 0x100) >> 8);
         sum = (short)(sum & 0xFF);
 

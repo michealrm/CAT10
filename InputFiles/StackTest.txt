@@ -1,4 +1,13 @@
 *=$F000
-mov r3, $FF
+mov r3, $AA
+mov r2, $BB
+mov r1, $CC
+mov r0, $DD
 push r3
+push r2
+push r1
+push r0
 pop r2
+pop r3
+pop r0
+pop r1

@@ -133,7 +133,7 @@ public class CPU extends ChipManager{
     				getChip("U500").getInput("MEM_1"), getChip("U500").getInput("MEM_2"), getChip("U500").getInput("MEM_3"), getChip("U500").getInput("MEM_4"),
     				getChip("U10").getOutput("Q"), getChip("U11").getOutput("Q"), getChip("U12").getOutput("Q"), getChip("U13").getOutput("Q"),
     				getChip("U15").getOutput("IPLower"), getChip("U15").getOutput("IPUpper"),
-    				(short)(getChip("U14").getOutput("SPLower")<<8|getChip("U14").getOutput("SPUpper")),
+    				(short)(getChip("U14").getOutput("SPLower")<<8|(getChip("U14").getOutput("SPUpper") & 0x00FF)),
                     getChip("U110").getOutput("FLAGS"));
             if(DEBUG_EXECUTION_DELAY) {
                 try {

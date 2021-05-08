@@ -3,10 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/InputFiles/MovTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/InputFiles/MovTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/InputFiles/StackTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/InputFiles/StackTest.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/CPU.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/util/CAT10Util.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +16,13 @@
   </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -97,14 +105,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U117_2to1_Mux.java</url>
-          <line>35</line>
-          <option name="timeStamp" value="13" />
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java</url>
+          <line>54</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U107_AddSub.java</url>
+          <line>29</line>
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/operations/U14_StackPointer.java</url>
-          <line>52</line>
-          <option name="timeStamp" value="15" />
+          <line>67</line>
+          <option name="timeStamp" value="23" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
