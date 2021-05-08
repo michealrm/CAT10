@@ -566,6 +566,257 @@ public class U500_InstructionDecoderChip extends Chip {
                             opCode = 0;
                         }
                         break;
+                    case (byte) 0x50:
+                        // AND R8,R8
+                        // Cycle 1
+                        if(cycle == (byte) 0) {
+                            // Memory Read Registers
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", regOperand2);
+                            getChip("U111").putInput("sel", (byte) 1);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1) {
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x51:
+                        // AND R8,$HH
+                        // Cycle 1
+                        if(cycle == (byte) 0) {
+                            // Memory Read
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0x0C) >> 6); // XX00 0000
+                            putOutput("INSTUpper", getInput("MEM_3"));
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", (byte) 6);
+                            getChip("U111").putInput("sel", (byte) 1);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x52:
+                        // AND R8,[$MMMM]
+                        // Cycle 1
+                        if(cycle == (byte) 0) {
+                            // Memory Read
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0x0C) >> 6); // XX00 0000
+                            putOutput("INSTUpper", getInput("MEM_3"));
+                            putOutput("INSTLower", getInput("MEM_4"));
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", (byte) 6);
+                            getChip("U111").putInput("sel", (byte) 1);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnbaleB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x53:
+                        // AND [$MMMM],R8
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            putOutput("INSTLower", getInput("MEM_3"));
+                            putOutput("INSTUpper", getInput("MEM_4"));
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 0);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U112").putInput("sel", (byte) 4); // Select regOperand1
+                            getChip("U113").putInput("SelA", regOperand2);
+                            getChip("U220").putInput("sel", (byte) 0);
+                            getChip("U110").putInput("ChipSelect", (byte) 1);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x60:
+                        // OR R8,R8
+                        // Cycle 1
+                        if(cycle == (byte) 0) {
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", regOperand2);
+                            getChip("U111").putInput("sel", (byte) 2);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand2' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x61:
+                        // OR R8, $HH
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            putOutput("INSTUpper", getInput("MEM_3"));
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", (byte) 6);
+                            getChip("U111").putInput("sel", (byte) 2);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x62:
+                        // OR R8,[$MMMM]
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            putOutput("INSTLower", getInput("MEM_3"));
+                            putOutput("INSTUpper", getInput("MEM_4"));
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 0); // Read
+                            cycle++;
+                        }
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 5);
+                            getChip("U114").putInput("SelA", regOperand1);
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x63:
+                        // OR [$MMMM],R8
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            putOutput("INSTLower", getInput("MEM_3"));
+                            putOutput("INSTUpper", getInput("MEM_4"));
+                            getChip("U112").putInput("sel", regOperand2);
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 1); // Write
+                            getChip("U220").putInput("sel", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x70:
+                        // XOR R8,R8
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", regOperand2);
+                            getChip("U111").putInput("sel", (byte) 3);
+                            cycle++;
+                        }
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 0); // Select Data
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x71:
+                        // XOR R8,$HH
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            putOutput("INSTUpper", getInput("MEM_3"));
+                            getChip("U112").putInput("sel", regOperand1);
+                            getChip("U113").putInput("sel", (byte) 6);
+                            getChip("U111").putInput("sel", (byte) 3);
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 3); // Select ALU
+                            getChip("U114").putInput("SelA", regOperand1); // Select register in 'regOperand1' to be destination
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x72:
+                        // XOR R8,[$MMMM]
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand1 = (byte) ((getInput("MEM_2") & 0xC0) >> 6); // XX00 0000
+                            putOutput("INSTLower", getInput("MEM_3"));
+                            putOutput("INSTUpper", getInput("MEM_4"));
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 0); // Read
+                            cycle++;
+                        }
+                        // Cycle 2
+                        else if(cycle == (byte) 1){
+                            getChip("U118A").putInput("sel", (byte) 5);
+                            getChip("U114").putInput("sel", regOperand1);
+                            getChip("U114").putInput("OutputEnableA", (byte) 1);
+                            getChip("U114").putInput("OutputEnableB", (byte) 0);
+                            isNewInstruction = true;
+                            opCode = 0;
+                        }
+                        break;
+
+                    case (byte) 0x73:
+                        // XOR [$MMMM],R8
+                        // Cycle 1
+                        if(cycle == (byte) 0){
+                            regOperand2 = (byte) ((getInput("MEM_2") & 0x0C) >> 2); // 0000 XX00
+                            putOutput("INSTLower", getInput("MEM_3"));
+                            putOutput("INSTUpper", getInput("MEM_4"));
+                            getChip("U116", putInput("sel", (byte) );)
+                        }
+                        break;
                     case (byte) 0x80:
                         // mov R8, R8
 

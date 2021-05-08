@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77e2119f-8c17-4b77-bd6a-08e2a0148931" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,17 +134,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>627</line>
+          <line>748</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>407</line>
+          <line>528</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/org/cat10/minicpu/chips/instruction/U500_InstructionDecoderChip.java</url>
-          <line>397</line>
+          <line>518</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
