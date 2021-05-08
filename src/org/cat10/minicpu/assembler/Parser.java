@@ -86,8 +86,13 @@ public class Parser {
             if(scan.currentToken.classif == Classif.EOF)
                 break;
 
-            if(scan.currentToken.classif != Classif.MNEMONIC && !scan.currentToken.tokenStr.equals("*") && scan.currentToken.classif != Classif.IDENTIFIER)
+            if(scan.currentToken.classif != Classif.MNEMONIC && !scan.currentToken.tokenStr.equals("*") && scan.currentToken.classif != Classif.IDENTIFIER && !scan.currentToken.tokenStr.equals(";"))
                 errorWithCurrent("Expected a mnemonic for the start of a statement");
+
+            if(scan.currentToken.tokenStr.equals(";")) {
+                scan.iNextSourceLineNr++;
+                continue;
+            }
 
             if(scan.currentToken.classif == Classif.IDENTIFIER) {
                 String labelName = scan.currentToken.tokenStr;

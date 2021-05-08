@@ -1,6 +1,7 @@
 *=$F000
-mov r1, $01
-addc [$abcd], r1
-addc [$abcd], r1
-addc [$abcd], r1
-mov r3, [$abcd]
+addc r0, $01
+addc r0, $01
+addc r0, $01 ; r0 added up to 3
+addc r3, r0
+addc r3, r0
+addc r3, r0  ; r3 added up to 9

@@ -139,15 +139,14 @@ public class Scanner {
             case EOF:
             default:
                 return false;
-            case REGISTER:
-            case INTCONST:
-                // Keep reading REGISTER ('R') and INTCONST ('$') until we hit a separator
-                // We'll handle exceptions like R5a or $12PV in getNext()
-                return !isSeparator(c);
             case SEPARATOR:
                 return isWhitespace(token) && isWhitespace(c);
             case MNEMONIC:
                 return startsWithMnemonic(token.tokenSB.toString() + c);
+            case REGISTER:
+            case INTCONST:
+                // Keep reading REGISTER ('R') and INTCONST ('$') until we hit a separator
+                // We'll handle exceptions like R5a or $12PV in getNext()
             case IDENTIFIER:
                 return !isWhitespace(c) && !isSeparator(c);
         }
@@ -244,7 +243,7 @@ public class Scanner {
     }
 
     private int[] skipEmptyLine(int r, int c) {
-        if(r < sourceLineM.size() && sourceLineM.get(r).length() == 0) {
+        while(r < sourceLineM.size() && (sourceLineM.get(r).length() == 0 || c >= sourceLineM.get(r).length())) {
             r++;
             c = 0;
         }
@@ -273,11 +272,11 @@ public class Scanner {
 
     private boolean isSeparator(Token token) {
         char c = token.tokenSB.charAt(0);
-        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':' || c == ';';
     }
 
     private boolean isSeparator(char c) {
-        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':';
+        return c == ',' || c == '[' || c == ']' || c == '*' || c == '=' || c == ':' || c == ';';
     }
 
     private boolean isIntConst(Token token) {
