@@ -281,17 +281,23 @@ public class U500_InstructionDecoderChip extends Chip {
                             putOutput("INSTLower", getInput("MEM_3"));
                             putOutput("INSTUpper", getInput("MEM_4"));
 
-                            getChip("U113").putInput("sel", regOperand2);
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 0); // Read
 
                             cycle++;
                         }
                         // Cycle 2
                         else if(cycle == (byte) 1) {
-                            getChip("U112").putInput("sel", (byte) 4); // Select regOperand2
+                            getChip("U112").putInput("sel", (byte) 4); // Select MEM
                             getChip("U113").putInput("sel", regOperand2);
                             getChip("U111").putInput("sel", (byte) 0);
                             putOutput("ALUAdderCarryIn", (byte) 0); //Add = 0 Sub = 1
 
+                            cycle++;
+                        } else if(cycle == (byte) 2) {
+                            getChip("U116").putInput("sel", (byte) 2);
+                            putOutput("ReadWrite", (byte) 1); // Write
+                            getChip("U220").putInput("sel", (byte) 2);
                             isNewInstruction = true;
                             opCode = 0;
                         }

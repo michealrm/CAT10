@@ -1,0 +1,6 @@
+*=$F000
+mov r1, $01
+addc [$abcd], r1
+addc [$abcd], r1
+addc [$abcd], r1
+mov r3, [$abcd]

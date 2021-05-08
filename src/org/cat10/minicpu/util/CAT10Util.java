@@ -84,8 +84,7 @@ public class CAT10Util {
 
         out.sum = (byte) (s0.sum | s1.sum << 1 | s2.sum << 2 | s3.sum << 3 |s4.sum << 4 |s5.sum << 5 |s6.sum << 6 |s7.sum << 7);
         out.carryFlag = s7.carryFlag;
-        if(s6.carryFlag != s7.carryFlag)
-            out.overflowFlag = (byte) 1;
+        out.overflowFlag = (byte)(s6.carryFlag ^ s7.carryFlag);
 
         // TODO: Add flags
 
