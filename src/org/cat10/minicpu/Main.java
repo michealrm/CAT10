@@ -11,6 +11,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scan = new Scanner(args[0]);
 
+        System.out.println("Filename: " + args[0]);
         try {
             parser = new Parser(scan);
 
